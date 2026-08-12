@@ -14,7 +14,7 @@ import (
 
 const (
 	// MinedSupply is the total coins producible through mining alone (785 million coins).
-	MinedSupply = 78_500_000_000_000_000
+	MinedSupply = 78500000000000000
 
 	// MainnetPremineAmount is 20% of the mined supply, added on top at block 1.
 	MainnetPremineAmount = MinedSupply / 5
@@ -24,7 +24,7 @@ const (
 	MaxMoneyValue = MinedSupply + MainnetPremineAmount
 
 	// MaxTxSize is the maximum serialized size of a single transaction in bytes.
-	MaxTxSize = 100_000
+	MaxTxSize = 100000
 
 	// 20% premine on top of mined supply for testnet.
 	TestnetPremineAmount = MinedSupply / 5
