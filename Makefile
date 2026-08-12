@@ -2,31 +2,31 @@
 # To rebrand: edit coinparams.go — everything else follows automatically.
 #
 # Build workflow:
-#   ./configure              # detect environment, write config.mk
-#   ./configure --with-qt    # enable GUI wallet
-#   make build               # build according to config
+#   ./configure             # detect environment, write config.mk
+#   ./configure --with-qt   # enable GUI wallet
+#   make build              # build according to config
 .PHONY: all build build-core deps qt qt-dev daemon cli genesis adversary pow-bench \
         test test-short bench lint fmt tidy clean \
         run-regtest run-regtest2 run-testnet run-testnet0 \
         testnet-status chaos modularity mine-genesis mine-genesis-testnet status
 
 MODULE := $(shell grep '^module' go.mod | awk '{print $$2}')
-BINDIR := bin
+BINDIR := .
 
 # --- Include configure output (if present) ---
 -include config.mk
 
 # --- Defaults for anything configure didn't set ---
-GO           ?= go
-WAILS        ?=
-NPM          ?= npm
-NODE         ?=
-WITH_QT      ?= 0
-WITH_WALLET  ?= 1
-WITH_MINING  ?= 1
-WEBKIT_TAG   ?=
-PREFIX       ?= /usr/local
-NVM_DIR      ?= $(HOME)/.nvm
+GO               ?= go
+WAILS            ?=
+NPM              ?= npm
+NODE             ?=
+WITH_QT          ?= 0
+WITH_WALLET      ?= 1
+WITH_MINING      ?= 1
+WEBKIT_TAG       ?=
+PREFIX           ?= /usr/local
+NVM_DIR          ?= $(HOME)/.nvm
 NVM_NODE_VERSION ?=
 
 # Shell preamble that activates nvm if configure detected it.
@@ -95,7 +95,6 @@ ifeq ($(WAILS),)
 	$(error Wails not found. Run: ./configure --with-qt)
 endif
 	$(NVM_SHELL) cd cmd/qt && $(WAILS) build $(WAILS_BUILD_FLAGS)
-	@mkdir -p $(BINDIR)
 	cp cmd/qt/build/bin/$(GUI_NAME) $(BINDIR)/$(GUI_NAME)
 
 qt-dev:
@@ -124,7 +123,7 @@ tidy:
 	$(GO) mod tidy
 
 clean:
-	rm -rf $(BINDIR) coinparams.mk cmd/qt/build/bin
+	rm -f coinparams.mk cmd/qt/build/bin $(DAEMON_NAME) $(CLI_NAME) $(GENESIS_NAME) $(ADVERSARY_NAME) $(ADVERSARY_NAME)2 $(ADVERSARY_NAME)3 pow-bench $(GUI_NAME)
 	$(GO) clean ./...
 
 distclean: clean
