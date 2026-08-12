@@ -13,20 +13,17 @@ import (
 )
 
 const (
-	// MinedSupply is the total coins producible through mining alone (before premine).
-	MinedSupply = 2_099_999_997_690_000
+	// MinedSupply is the total coins producible through mining alone (785 million coins).
+	MinedSupply = 78_500_000_000_000_000
 
 	// MainnetPremineAmount is 20% of the mined supply, added on top at block 1.
-	MainnetPremineAmount = MinedSupply / 5 // 419_999_999_538_000
+	MainnetPremineAmount = MinedSupply / 5
 
 	// MaxMoneyValue is the absolute maximum base units that can ever exist,
 	// including the mainnet premine. Consensus and mempool checks use this.
 	MaxMoneyValue = MinedSupply + MainnetPremineAmount
 
 	// MaxTxSize is the maximum serialized size of a single transaction in bytes.
-	// Xcosh Core uses MAX_STANDARD_TX_WEIGHT / 4 ≈ 100,000 bytes for standard
-	// transactions. This protects validation from CPU/memory exhaustion on
-	// oversized transactions.
 	MaxTxSize = 100_000
 
 	// 20% premine on top of mined supply for testnet.
@@ -35,15 +32,10 @@ const (
 
 var (
 	// Hardcoded burn marker script for trackable burns/premine accounting.
-	// NOTE: Script spend rules are not enforced yet in this codebase.
 	TestnetBurnScript = []byte("burn:testnet:premine:v1")
 )
 
-// Genesis block coinbase messages below are consensus-critical historical data
-// and must not be changed. New genesis blocks should use coinparams.NameLower.
-
 // Mainnet is the primary network.
-// Economic parameters are aligned with Xcosh mainnet.
 var Mainnet = &ChainParams{
 	Name:         "mainnet",
 	DataDirName:  "",
@@ -51,13 +43,9 @@ var Mainnet = &ChainParams{
 	DefaultPort:  19333,
 	AddressPrefix: 0x00,
 
-	// Pre-mined genesis (sha256mem). Coinbase: "xcosh genesis"
-	// Timestamp: 1774175035 (2026-03-22T10:23:55Z)
-	// Initial difficulty: compact 0x1e346dbd (100× harder than 0x1f147ade).
-	// Display hash: 25e5c6c08aedc446584045db998974b6b7b816ac69c73255c2e8496949989576
 	GenesisBlock: types.Block{
 		Header: types.BlockHeader{
-			Version:   1,
+			Version:    1,
 			PrevBlock: types.ZeroHash,
 			MerkleRoot: types.Hash{
 				0x2f, 0xd5, 0x06, 0x2d, 0x25, 0xf4, 0x21, 0x67,
@@ -90,13 +78,12 @@ var Mainnet = &ChainParams{
 		0x46, 0xc4, 0xed, 0x8a, 0xc0, 0xc6, 0xe5, 0x25,
 	},
 
-	TargetBlockSpacing:  10 * time.Minute,
-	RetargetInterval:    144,
-	TargetTimespan:      144 * 10 * time.Minute,
-	MaxTimeFutureDrift:  2 * time.Hour,
-	MinTimestampRule:    "median-11",
+	TargetBlockSpacing:   35 * time.Second,
+	RetargetInterval:     144,
+	TargetTimespan:       144 * 35 * time.Second,
+	MaxTimeFutureDrift:   2 * time.Hour,
+	MinTimestampRule:     "median-11",
 
-	// Genesis difficulty (100× harder than prior 0x1f147ade). LWMA retargets from here.
 	InitialBits:      0x1e346dbd,
 	MinBits:          0x207fffff,
 	NoRetarget:       false,
@@ -104,34 +91,29 @@ var Mainnet = &ChainParams{
 	MaxBlockSize:     1_000_000,
 	MaxBlockTxCount:  10_000,
 
-	InitialSubsidy:          50_0000_0000,
-	SubsidyHalvingInterval:  210_000,
+	InitialSubsidy:         50_0000_0000,
+	SubsidyHalvingInterval: 7_850_000,
 
 	CoinbaseMaturity: 100,
 
 	MaxReorgDepth: 288,
 
-	TimewarpGracePeriod: 10 * time.Minute, // BIP-94: 600 seconds (one block spacing on mainnet)
+	TimewarpGracePeriod: 35 * time.Second, // Updated to 1 block spacing
 	PeerStoreMaxSize:    4096,
 
 	MaxMempoolSize:    5000,
 	MinRelayTxFee:     1000,
-	MinRelayTxFeeRate: 1, // 1 sat/byte minimum, matching Xcosh Core's default
-	MempoolExpiry:     336 * time.Hour, // 2 weeks, matching Xcosh Core DEFAULT_MEMPOOL_EXPIRE
+	MinRelayTxFeeRate: 1,
+	MempoolExpiry:     336 * time.Hour,
 
-	// Bootstrap peers (must be xcoshd listening on mainnet DefaultPort 19333).
-	// As of 2026-04 the public seed VPS hosts accept P2P on testnet port 19334 only;
-	// 19333/tcp is not open there, so mainnet nodes will not connect until those
-	// hosts run a mainnet listener on 19333 (or you add -seedpeer / config seeds).
 	SeedNodes: []string{
 		"95.179.203.47:19333",
 		"207.246.117.14:19333",
 		"[2001:19f0:5400:3322:5400:06ff:fe1d:ce90]:19333",
 	},
 
-	MiningStartTime: 1777338000, // 2026-04-27 18:00:00 PDT — mainnet mining begins
+	MiningStartTime: 1777338000,
 
-	// Block-1 premine: 20% of mined supply paid to a project-controlled address.
 	PremineHeight: 1,
 	PremineAmount: MainnetPremineAmount,
 	PremineScript: []byte{
@@ -149,7 +131,6 @@ var Mainnet = &ChainParams{
 }
 
 // Testnet is the public test network.
-// v10 (testnet10): 20-second blocks, LWMA difficulty, LE hash convention.
 var Testnet = &ChainParams{
 	Name:         "testnet",
 	DataDirName:  "testnet12",
@@ -157,13 +138,9 @@ var Testnet = &ChainParams{
 	DefaultPort:  19334,
 	AddressPrefix: 0x6F,
 
-	// Pre-mined genesis block (sha256mem, LE hash convention).
-	// Coinbase: "xcosh testnet1 genesis"
-	// Timestamp: 1744325400 (2025-04-10T22:30:00Z)
-	// Display hash: 242c396cebc08d71ed6de2cd1b17f2641f34d0edd42b57f79dc02f5be286c0c1
 	GenesisBlock: types.Block{
 		Header: types.BlockHeader{
-			Version:   1,
+			Version:    1,
 			PrevBlock: types.ZeroHash,
 			MerkleRoot: types.Hash{
 				0xb1, 0x88, 0x4d, 0xb0, 0x63, 0x4b, 0xe0, 0x81,
@@ -202,14 +179,14 @@ var Testnet = &ChainParams{
 		0x71, 0x8d, 0xc0, 0xeb, 0x6c, 0x39, 0x2c, 0x24,
 	},
 
-	TargetBlockSpacing:  20 * time.Second,
-	RetargetInterval:    60, // LWMA window size N=60 per zawy12
-	TargetTimespan:      60 * 20 * time.Second,
-	MaxTimeFutureDrift:  60 * time.Second, // N*T/20 = 60*20/20 = 60s per zawy12
-	MinTimestampRule:    "median-11",
+	TargetBlockSpacing:   35 * time.Second,
+	RetargetInterval:     60,
+	TargetTimespan:       60 * 35 * time.Second,
+	MaxTimeFutureDrift:   105 * time.Second, // N*T/20 = 60*35/20
+	MinTimestampRule:     "median-11",
 
-	InitialBits:              0x1f666659, // 20x harder than original 0x2007ffff
-	MinBits:                  0x207fffff, // Floor: trivial difficulty
+	InitialBits:              0x1f666659,
+	MinBits:                  0x207fffff,
 	NoRetarget:               false,
 	AllowMinDifficultyBlocks: true,
 	MinDifficultyGap:         5 * time.Minute,
@@ -217,14 +194,14 @@ var Testnet = &ChainParams{
 	MaxBlockSize:     2_000_000,
 	MaxBlockTxCount:  10_000,
 
-	InitialSubsidy:          50_0000_0000,
-	SubsidyHalvingInterval:  210_000,
+	InitialSubsidy:         50_0000_0000,
+	SubsidyHalvingInterval: 7_850_000,
 
 	CoinbaseMaturity: 100,
 
 	MaxReorgDepth: 1000,
 
-	TimewarpGracePeriod: 10 * time.Minute,
+	TimewarpGracePeriod: 35 * time.Second,
 	PeerStoreMaxSize:    1024,
 
 	MaxMempoolSize:    5000,
@@ -232,7 +209,6 @@ var Testnet = &ChainParams{
 	MinRelayTxFeeRate: 1,
 	MempoolExpiry:     336 * time.Hour,
 
-	// Public testnet seeds (P2P 19334 — matches deployed xcosh-testnet.service).
 	SeedNodes: []string{
 		"95.179.203.47:19334",
 		"207.246.117.14:19334",
@@ -242,12 +218,11 @@ var Testnet = &ChainParams{
 		"locktime":      1,
 		"mindiffblocks": 1,
 		"timewarp":      1,
-		// sha256mem progression-harden variant (same algorithm name on the wire).
-		"sha256mem": 85000,
+		"sha256mem":     85000,
 	},
 }
 
-// Regtest is a local regression-test network with trivial difficulty and no retarget.
+// Regtest is a local regression-test network.
 var Regtest = &ChainParams{
 	Name:         "regtest",
 	DataDirName:  "regtest",
@@ -255,13 +230,12 @@ var Regtest = &ChainParams{
 	DefaultPort:  19444,
 	AddressPrefix: 0x6F,
 
-	TargetBlockSpacing:  1 * time.Second,
-	RetargetInterval:    1,
-	TargetTimespan:      1 * time.Second,
-	MaxTimeFutureDrift:  10 * time.Minute,
-	MinTimestampRule:    "prev+1",
+	TargetBlockSpacing:   1 * time.Second,
+	RetargetInterval:     1,
+	TargetTimespan:       1 * time.Second,
+	MaxTimeFutureDrift:   10 * time.Minute,
+	MinTimestampRule:     "prev+1",
 
-	// Very easy difficulty: top byte 0x20 = exponent 32, mantissa 0x0fffff.
 	InitialBits:      0x207fffff,
 	MinBits:          0x207fffff,
 	NoRetarget:       true,
@@ -269,8 +243,8 @@ var Regtest = &ChainParams{
 	MaxBlockSize:     4_000_000,
 	MaxBlockTxCount:  50_000,
 
-	InitialSubsidy:          50_0000_0000,
-	SubsidyHalvingInterval:  150,
+	InitialSubsidy:         50_0000_0000,
+	SubsidyHalvingInterval: 150,
 
 	CoinbaseMaturity: 1,
 
@@ -281,8 +255,8 @@ var Regtest = &ChainParams{
 
 	MaxMempoolSize:    10000,
 	MinRelayTxFee:     0,
-	MinRelayTxFeeRate: 0, // No fee-rate requirement on regtest
-	MempoolExpiry:     1 * time.Hour, // Shorter for testing convenience
+	MinRelayTxFeeRate: 0,
+	MempoolExpiry:     1 * time.Hour,
 
 	SeedNodes: []string{},
 
@@ -307,7 +281,6 @@ func NetworkByName(name string) *ChainParams {
 }
 
 // InitGenesis computes and sets the genesis block and hash for the given params.
-// This should be called after the genesis block has been mined (nonce found).
 func InitGenesis(p *ChainParams, genesisBlock types.Block, genesisHash types.Hash) {
 	p.GenesisBlock = genesisBlock
 	p.GenesisHash = genesisHash
