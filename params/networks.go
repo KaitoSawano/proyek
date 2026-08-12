@@ -91,8 +91,8 @@ var Mainnet = &ChainParams{
 	MaxBlockSize:     1_000_000,
 	MaxBlockTxCount:  10_000,
 
-	InitialSubsidy:         50_0000_0000,
-	SubsidyHalvingInterval: 7_850_000,
+	InitialSubsidy:         5000000000,
+	SubsidyHalvingInterval: 7850000,
 
 	CoinbaseMaturity: 100,
 
@@ -161,7 +161,7 @@ var Testnet = &ChainParams{
 			}},
 			Outputs: []types.TxOutput{
 				{
-					Value:    50_0000_0000,
+					Value:    5000000000,
 					PkScript: []byte{0x00},
 				},
 				{
@@ -191,11 +191,11 @@ var Testnet = &ChainParams{
 	AllowMinDifficultyBlocks: true,
 	MinDifficultyGap:         5 * time.Minute,
 
-	MaxBlockSize:     2_000_000,
-	MaxBlockTxCount:  10_000,
+	MaxBlockSize:     2000000,
+	MaxBlockTxCount:  10000,
 
-	InitialSubsidy:         50_0000_0000,
-	SubsidyHalvingInterval: 7_850_000,
+	InitialSubsidy:         5000000000,
+	SubsidyHalvingInterval: 7850000,
 
 	CoinbaseMaturity: 100,
 
@@ -240,10 +240,10 @@ var Regtest = &ChainParams{
 	MinBits:          0x207fffff,
 	NoRetarget:       true,
 
-	MaxBlockSize:     4_000_000,
-	MaxBlockTxCount:  50_000,
+	MaxBlockSize:     4000000,
+	MaxBlockTxCount:  50000,
 
-	InitialSubsidy:         50_0000_0000,
+	InitialSubsidy:         5000000000,
 	SubsidyHalvingInterval: 150,
 
 	CoinbaseMaturity: 1,
