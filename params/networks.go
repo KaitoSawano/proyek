@@ -88,8 +88,8 @@ var Mainnet = &ChainParams{
 	MinBits:          0x207fffff,
 	NoRetarget:       false,
 
-	MaxBlockSize:     1_000_000,
-	MaxBlockTxCount:  10_000,
+	MaxBlockSize:     1000000,
+	MaxBlockTxCount:  10000,
 
 	InitialSubsidy:         5000000000,
 	SubsidyHalvingInterval: 7850000,
