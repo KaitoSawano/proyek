@@ -180,7 +180,7 @@ def _run_backend(skip: str | None) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Cross-platform Fairchain chaos test launcher")
+    parser = argparse.ArgumentParser(description="Cross-platform Xcosh chaos test launcher")
     parser.add_argument(
         "--skip",
         default="",

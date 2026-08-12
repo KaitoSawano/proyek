@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -13,26 +13,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms"
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/config"
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/difficulty"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	"github.com/bams-repo/fairchain/internal/metrics"
-	"github.com/bams-repo/fairchain/internal/miner"
-	"github.com/bams-repo/fairchain/internal/p2p"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/rpc"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/stratum"
-	"github.com/bams-repo/fairchain/internal/timeadjust"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/wallet"
+	"github.com/bams-repo/xcosh/internal/algorithms"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/config"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/difficulty"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	"github.com/bams-repo/xcosh/internal/metrics"
+	"github.com/bams-repo/xcosh/internal/miner"
+	"github.com/bams-repo/xcosh/internal/p2p"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/rpc"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/stratum"
+	"github.com/bams-repo/xcosh/internal/timeadjust"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/wallet"
 )
 
 // Options controls optional node behaviour. Callers (daemon, GUI) set these
@@ -49,7 +49,7 @@ type Options struct {
 }
 
 // Node encapsulates the full node lifecycle: stores, chain, mempool, P2P,
-// wallet, RPC, and optional miner. Both fairchaind and fairchain-qt embed
+// wallet, RPC, and optional miner. Both xcoshd and xcosh-qt embed
 // this to share the identical startup/shutdown sequence.
 type Node struct {
 	cfg    *config.Config

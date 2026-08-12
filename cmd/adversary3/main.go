@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 package main
@@ -21,10 +21,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms"
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 var testnetMagic = [4]byte{0xFA, 0x1C, 0xC0, 0x02}

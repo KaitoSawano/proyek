@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 // pow-bench measures sha256mem PoW throughput and time-to-hit for a fixed
@@ -17,12 +17,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256mem"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/difficulty/lwma"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/difficulty/lwma"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 func main() {

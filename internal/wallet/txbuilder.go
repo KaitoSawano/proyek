@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 	txOverhead          = 10
 
 	// Dust threshold: outputs below this are considered dust and rejected.
-	// Bitcoin Core uses 546 satoshis for P2PKH at 3 sat/byte relay fee.
+	// Xcosh Core uses 546 satoshis for P2PKH at 3 sat/byte relay fee.
 	DustThreshold = 546
 )
 
@@ -81,7 +81,7 @@ func (w *HDWallet) BuildTransaction(
 	}
 
 	// Build the transaction. LockTime is set to the current tip height as an
-	// anti-fee-sniping measure (matching Bitcoin Core behavior). This prevents
+	// anti-fee-sniping measure (matching Xcosh Core behavior). This prevents
 	// miners from re-mining old blocks to steal fees from this transaction.
 	tx := &types.Transaction{
 		Version:  1,

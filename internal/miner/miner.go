@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -16,14 +16,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // TimeSource provides network-adjusted time for block timestamp construction.
@@ -130,10 +130,10 @@ func (m *Miner) SetPowerLimit(pct int) {
 	m.powerLimit.Store(int32(pct))
 }
 
-// skipMiningStartGate returns true when FAIRCHAIN_SKIP_MINING_START is set,
+// skipMiningStartGate returns true when XCOSH_SKIP_MINING_START is set,
 // ignoring params.MiningStartTime. Intended for local / isolated testing only.
 func skipMiningStartGate() bool {
-	v := strings.TrimSpace(os.Getenv("FAIRCHAIN_SKIP_MINING_START"))
+	v := strings.TrimSpace(os.Getenv("XCOSH_SKIP_MINING_START"))
 	return v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes")
 }
 
@@ -150,7 +150,7 @@ func MaxWorkers() int {
 func (m *Miner) Run(ctx context.Context) {
 	logging.L.Info("starting mining loop", "component", "miner", "workers", m.workers)
 	if skipMiningStartGate() {
-		logging.L.Warn("FAIRCHAIN_SKIP_MINING_START is set: ignoring chain MiningStartTime (local testing only)",
+		logging.L.Warn("XCOSH_SKIP_MINING_START is set: ignoring chain MiningStartTime (local testing only)",
 			"component", "miner")
 	}
 
@@ -272,7 +272,7 @@ func (m *Miner) snapshotHashrate() {
 // MineOne builds a template and attempts to mine a single block using all
 // available CPU cores. Each worker searches a distinct nonce range. If the
 // full nonce space is exhausted, the extraNonce/timestamp are bumped and
-// the search restarts (matching Bitcoin Core's inner mining loop).
+// the search restarts (matching Xcosh Core's inner mining loop).
 func (m *Miner) MineOne(ctx context.Context) (*types.Block, error) {
 	tipHash, tipHeight := m.chain.Tip()
 	tipHeader, err := m.chain.TipHeader()

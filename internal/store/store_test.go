@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 func newTestFileStore(t *testing.T) *FileStore {

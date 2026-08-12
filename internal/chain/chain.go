@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -16,20 +16,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/metrics"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/metrics"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
 )
 
 const MaxOrphanBlocks = 100
 
 // OrphanExpiry is the maximum age of an orphan block before it is eligible
-// for expiry-based eviction, matching Bitcoin Core's ORPHAN_TX_EXPIRE_TIME
+// for expiry-based eviction, matching Xcosh Core's ORPHAN_TX_EXPIRE_TIME
 // concept adapted for blocks.
 const OrphanExpiry = 20 * time.Minute
 
@@ -56,7 +56,7 @@ var ErrReorgTooDeep = errors.New("reorg exceeds maximum depth")
 
 // TimeSource provides network-adjusted time. Implementations should return a
 // Unix timestamp that accounts for the median clock offset of connected peers,
-// matching Bitcoin Core's GetAdjustedTime().
+// matching Xcosh Core's GetAdjustedTime().
 type TimeSource interface {
 	Now() int64
 }
@@ -482,7 +482,7 @@ func (c *Chain) GetBlockHeight(hash types.Hash) (uint32, error) {
 }
 
 // BlockLocator returns a list of block hashes from the tip of the active chain,
-// spaced exponentially like Bitcoin Core's CChain::GetLocator(). The result is:
+// spaced exponentially like Xcosh Core's CChain::GetLocator(). The result is:
 // tip, tip-1, tip-2, tip-4, tip-8, ..., genesis. This allows a peer to find the
 // highest common block even when chains have diverged significantly.
 func (c *Chain) BlockLocator() []types.Hash {
@@ -511,7 +511,7 @@ func (c *Chain) BlockLocator() []types.Hash {
 		}
 
 		// After the first 10 entries (which are consecutive), start doubling
-		// the step size. This matches Bitcoin Core's locator construction.
+		// the step size. This matches Xcosh Core's locator construction.
 		if len(locator) > 10 {
 			step *= 2
 		}
@@ -876,7 +876,7 @@ func (c *Chain) pruneSideChainIndex() {
 }
 
 // persistUtxoChanges writes UTXO changes for a connected block to the chainstate DB.
-// Modeled after Bitcoin Core's FlushStateToDisk: all UTXO mutations and the best-block
+// Modeled after Xcosh Core's FlushStateToDisk: all UTXO mutations and the best-block
 // pointer are written in a single atomic LevelDB batch so a crash at any point leaves
 // the chainstate either fully at the old tip or fully at the new tip.
 func (c *Chain) persistUtxoChanges(block *types.Block, undoData *utxo.BlockUndoData, blockHash types.Hash) error {
@@ -1330,7 +1330,7 @@ func (c *Chain) OrphanCount() int {
 
 // ClearOrphanBlocks removes every block from the orphan pool. Used when the P2P
 // layer discards speculative download state and re-requests blocks in order
-// (analogous to dropping invalid download state in Bitcoin Core rather than
+// (analogous to dropping invalid download state in Xcosh Core rather than
 // letting stale orphans steer getdata).
 func (c *Chain) ClearOrphanBlocks() int {
 	c.mu.Lock()

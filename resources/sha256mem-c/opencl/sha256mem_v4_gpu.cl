@@ -10,7 +10,7 @@
  *   4. Mix B:    32768 rounds: idx = acc[r%7] mod Slots (LE words)
  *   5. Finalize: SHA256(acc) -> PoW hash
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 

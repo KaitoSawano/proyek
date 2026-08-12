@@ -2,12 +2,12 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Fairchain, **please do not open a
+If you discover a security vulnerability in Xcosh, **please do not open a
 public issue**. Responsible disclosure helps protect users of the software.
 
 ### How to Report
 
-Send an email to **fairchain-security@proton.me** with:
+Send an email to **xcosh-security@proton.me** with:
 
 - A description of the vulnerability
 - Steps to reproduce or a proof of concept

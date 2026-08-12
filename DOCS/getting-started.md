@@ -1,7 +1,7 @@
 <!-- Branding values sourced from internal/coinparams/coinparams.go -->
 # Getting Started
 
-This guide covers building go-chain from source, running your first node, and basic operations. The binary names below (`fairchaind`, `fairchain-cli`) reflect the default coin parameters — these change automatically when you rebrand via `coinparams.go`.
+This guide covers building go-chain from source, running your first node, and basic operations. The binary names below (`xcoshd`, `xcosh-cli`) reflect the default coin parameters — these change automatically when you rebrand via `coinparams.go`.
 
 ## Prerequisites
 
@@ -23,8 +23,8 @@ This produces two binaries in `bin/`:
 
 | Binary | Description |
 |--------|-------------|
-| `fairchaind` | The full node daemon |
-| `fairchain-cli` | Command-line RPC client |
+| `xcoshd` | The full node daemon |
+| `xcosh-cli` | Command-line RPC client |
 
 Optional build targets:
 
@@ -56,10 +56,10 @@ make run-regtest
 Or manually:
 
 ```bash
-mkdir -p /tmp/fairchain-regtest
-./bin/fairchaind \
+mkdir -p /tmp/xcosh-regtest
+./bin/xcoshd \
   -network regtest \
-  -datadir /tmp/fairchain-regtest \
+  -datadir /tmp/xcosh-regtest \
   -listen 0.0.0.0:19444 \
   -rpcbind 127.0.0.1 \
   -rpcport 19445 \
@@ -71,10 +71,10 @@ mkdir -p /tmp/fairchain-regtest
 Join the public test network:
 
 ```bash
-mkdir -p /tmp/fairchain-testnet
-./bin/fairchaind \
+mkdir -p /tmp/xcosh-testnet
+./bin/xcoshd \
   -network testnet \
-  -datadir /tmp/fairchain-testnet \
+  -datadir /tmp/xcosh-testnet \
   -listen 0.0.0.0:19334 \
   -rpcbind 127.0.0.1 \
   -rpcport 19335 \
@@ -86,9 +86,9 @@ Testnet has hardcoded seed nodes, so the node will automatically discover peers 
 ### Mainnet
 
 ```bash
-./bin/fairchaind \
+./bin/xcoshd \
   -network mainnet \
-  -datadir ~/.fairchain \
+  -datadir ~/.xcosh \
   -listen 0.0.0.0:19333 \
   -rpcbind 127.0.0.1 \
   -rpcport 19445
@@ -99,7 +99,7 @@ Testnet has hardcoded seed nodes, so the node will automatically discover peers 
 | Flag | Description | Default |
 |------|-------------|---------|
 | `-network` | Network: `mainnet`, `testnet`, `regtest` | `regtest` |
-| `-datadir` | Root data directory | `~/.fairchain` |
+| `-datadir` | Root data directory | `~/.xcosh` |
 | `-listen` | P2P listen address (host:port) | `0.0.0.0:19444` |
 | `-rpcbind` | RPC bind address | `127.0.0.1` |
 | `-rpcport` | RPC port | `19445` |
@@ -108,7 +108,7 @@ Testnet has hardcoded seed nodes, so the node will automatically discover peers 
 | `-seed-peers` | Comma-separated seed peers | |
 | `-connect` | Connect ONLY to these peers (disables discovery) | |
 | `-noseednode` | Suppress hardcoded seed nodes | `false` |
-| `-conf` | Path to `fairchain.conf` (INI-style) | |
+| `-conf` | Path to `xcosh.conf` (INI-style) | |
 | `-config` | Path to JSON config file | |
 | `-norpcauth` | Disable RPC authentication (testing only) | `false` |
 | `-log-level` | Log level: `debug`, `info`, `warn`, `error` | `info` |
@@ -125,7 +125,7 @@ go-chain supports two config file formats. CLI flags always take priority over c
 ```json
 {
   "network": "regtest",
-  "data_dir": "/tmp/fairchain-regtest",
+  "data_dir": "/tmp/xcosh-regtest",
   "listen_addr": "0.0.0.0:19444",
   "rpc_addr": "127.0.0.1:19445",
   "seed_peers": [],
@@ -138,15 +138,15 @@ go-chain supports two config file formats. CLI flags always take priority over c
 }
 ```
 
-Load with: `fairchaind -config /path/to/config.json`
+Load with: `xcoshd -config /path/to/config.json`
 
-### INI format (fairchain.conf)
+### INI format (xcosh.conf)
 
-Bitcoin Core-style config with network sections:
+Xcosh Core-style config with network sections:
 
 ```ini
 # Global options
-datadir=/home/user/.fairchain
+datadir=/home/user/.xcosh
 loglevel=info
 
 [main]
@@ -164,11 +164,11 @@ rpc=127.0.0.1:19445
 mine=1
 ```
 
-The daemon automatically looks for `fairchain.conf` in the data directory root. Override with: `fairchaind -conf /path/to/fairchain.conf`
+The daemon automatically looks for `xcosh.conf` in the data directory root. Override with: `xcoshd -conf /path/to/xcosh.conf`
 
 ## RPC Authentication
 
-By default, the RPC server generates a random cookie file (`.cookie`) in the data directory, matching Bitcoin Core's cookie-based auth. The CLI reads this automatically when connecting to `localhost`.
+By default, the RPC server generates a random cookie file (`.cookie`) in the data directory, matching Xcosh Core's cookie-based auth. The CLI reads this automatically when connecting to `localhost`.
 
 To set explicit credentials, use the config file:
 
@@ -184,7 +184,7 @@ For local testing/regtest, you can disable auth entirely with `-norpcauth`.
 ## Data Directory Layout
 
 ```
-~/.fairchain/                    # mainnet (root)
+~/.xcosh/                    # mainnet (root)
   blocks/
     blk00000.dat                 # Raw block data (flat files)
     rev00000.dat                 # Undo/revert data for reorgs
@@ -196,7 +196,7 @@ For local testing/regtest, you can disable auth entirely with `-norpcauth`.
   mempool.dat                    # Persisted mempool
   .cookie                        # RPC auth cookie
   .lock                          # Instance lock file
-  fairchain.conf                 # Optional config
+  xcosh.conf                 # Optional config
 
   testnet0/                      # Testnet subdirectory
     blocks/
@@ -216,34 +216,34 @@ For local testing/regtest, you can disable auth entirely with `-norpcauth`.
 ### Check node status
 
 ```bash
-./bin/fairchain-cli getblockchaininfo
+./bin/xcosh-cli getblockchaininfo
 ```
 
 ### Check block height
 
 ```bash
-./bin/fairchain-cli getblockcount
+./bin/xcosh-cli getblockcount
 ```
 
 ### View connected peers
 
 ```bash
-./bin/fairchain-cli getpeerinfo
+./bin/xcosh-cli getpeerinfo
 ```
 
 ### Connect to a remote node's RPC
 
 ```bash
-./bin/fairchain-cli -rpcconnect=45.32.196.26 -rpcport=19335 getblockchaininfo
+./bin/xcosh-cli -rpcconnect=45.32.196.26 -rpcport=19335 getblockchaininfo
 ```
 
 ### Connect a second local node
 
 ```bash
-mkdir -p /tmp/fairchain-regtest2
-./bin/fairchaind \
+mkdir -p /tmp/xcosh-regtest2
+./bin/xcoshd \
   -network regtest \
-  -datadir /tmp/fairchain-regtest2 \
+  -datadir /tmp/xcosh-regtest2 \
   -listen 0.0.0.0:19446 \
   -rpcbind 127.0.0.1 \
   -rpcport 19447 \
@@ -253,7 +253,7 @@ mkdir -p /tmp/fairchain-regtest2
 ### Stop the daemon
 
 ```bash
-./bin/fairchain-cli stop
+./bin/xcosh-cli stop
 ```
 
 Or send `SIGINT`/`SIGTERM` (Ctrl+C) to the process.
@@ -269,10 +269,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=fairchain
-ExecStart=/usr/local/bin/fairchaind \
+User=xcosh
+ExecStart=/usr/local/bin/xcoshd \
   -network testnet \
-  -datadir /var/lib/fairchain \
+  -datadir /var/lib/xcosh \
   -listen 0.0.0.0:19334 \
   -rpcbind 127.0.0.1 \
   -rpcport 19335 \
@@ -287,4 +287,4 @@ WantedBy=multi-user.target
 ## Next Steps
 
 - See [RPC Commands](rpc-commands.md) for the full API reference
-- Run `./bin/fairchain-cli help` for a quick command listing
+- Run `./bin/xcosh-cli help` for a quick command listing

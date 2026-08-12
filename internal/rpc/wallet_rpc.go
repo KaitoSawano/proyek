@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -17,11 +17,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
-	"github.com/bams-repo/fairchain/internal/wallet"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/wallet"
 )
 
 // WalletInterface abstracts the wallet for RPC handlers.
@@ -41,7 +41,7 @@ type WalletInterface interface {
 	GetKeyForAddress(address string) *wallet.DerivedKey
 	BackupWallet(destPath string) error
 
-	// Encryption (Bitcoin Core parity).
+	// Encryption (Xcosh Core parity).
 	IsEncrypted() bool
 	IsLocked() bool
 	EncryptWallet(passphrase string) error
@@ -98,7 +98,7 @@ func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-// --- Bitcoin Core parity: wallet RPCs ---
+// --- Xcosh Core parity: wallet RPCs ---
 
 func (s *Server) handleGetNewAddress(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) || !s.requireWallet(w) {
@@ -765,7 +765,7 @@ func (s *Server) handleSendMany(w http.ResponseWriter, r *http.Request) {
 	writeError(w, http.StatusBadRequest, "sendmany is only available via JSON-RPC")
 }
 
-// --- Bitcoin Core parity: wallet encryption RPCs ---
+// --- Xcosh Core parity: wallet encryption RPCs ---
 
 func (s *Server) handleEncryptWallet(w http.ResponseWriter, r *http.Request) {
 	if !requirePOST(w, r) || !s.requireWallet(w) {
@@ -838,7 +838,7 @@ func (s *Server) handleWalletPassphraseChange(w http.ResponseWriter, r *http.Req
 // --- Internal helpers ---
 
 // buildWalletListTransactions returns the same wallet history as the Qt UI: UTXO receives,
-// mempool activity, and confirmed sends from a chain replay (Bitcoin-style listtransactions).
+// mempool activity, and confirmed sends from a chain replay (Xcosh-style listtransactions).
 func (s *Server) buildWalletListTransactions() ([]map[string]interface{}, error) {
 	if s.wallet == nil || s.chain == nil || s.mempool == nil {
 		return nil, fmt.Errorf("wallet, chain, or mempool not available")

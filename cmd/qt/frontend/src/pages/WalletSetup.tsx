@@ -95,7 +95,7 @@ export function WalletSetup({ onComplete }: { onComplete: () => void }) {
             F
           </div>
           <h1 className="text-xl font-bold tracking-tight" style={{ color: "var(--color-btc-text)" }}>
-            Welcome to Fairchain
+            Welcome to Xcosh
           </h1>
           <p className="text-center text-sm leading-relaxed" style={{ color: "var(--color-btc-text-muted)" }}>
             Create a new wallet to get started, or import an existing wallet using your recovery phrase.

@@ -1,9 +1,9 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license.
 
-// Package sha256mem implements the flagship memory-hard PoW used by Fairchain.
+// Package sha256mem implements the flagship memory-hard PoW used by Xcosh.
 //
 // The design favors CPUs over GPUs: each hash builds a large scratchpad (Slots)
 // with periodic serial SHA-256 hardening, then runs two long mixing passes where

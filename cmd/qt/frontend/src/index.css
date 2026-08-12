@@ -33,7 +33,7 @@
   --color-surface-selected-dense: rgb(255 255 255 / 0.06);
   --color-surface-selected-dense-hover: rgb(255 255 255 / 0.09);
 
-  /* shadcn Sidebar — map to Fairchain / BTC palette */
+  /* shadcn Sidebar — map to Xcosh / BTC palette */
   --color-sidebar: var(--color-btc-surface);
   --color-sidebar-foreground: var(--color-btc-text);
   --color-sidebar-primary: var(--color-btc-gold);

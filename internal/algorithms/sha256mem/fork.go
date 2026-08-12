@@ -1,10 +1,10 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 package sha256mem
 
 import (
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // ActivationKey is the ChainParams.ActivationHeights key for the progression-harden

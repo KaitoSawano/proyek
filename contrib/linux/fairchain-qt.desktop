@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=Fairchain Wallet
+Name=Xcosh Wallet
 GenericName=Cryptocurrency Wallet
-Comment=Fairchain peer-to-peer network client and wallet
-Exec=fairchain-qt %u
-Icon=fairchain-qt
+Comment=Xcosh peer-to-peer network client and wallet
+Exec=xcosh-qt %u
+Icon=xcosh-qt
 Terminal=false
 Categories=Office;Finance;Network;
-StartupWMClass=fairchain-qt
-MimeType=x-scheme-handler/fairchain;
+StartupWMClass=xcosh-qt
+MimeType=x-scheme-handler/xcosh;

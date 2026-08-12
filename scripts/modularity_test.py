@@ -147,7 +147,7 @@ def _run_backend(skip: str | None, debug: bool) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Cross-platform Fairchain modularity test launcher")
+    parser = argparse.ArgumentParser(description="Cross-platform Xcosh modularity test launcher")
     parser.add_argument(
         "--skip",
         default="",

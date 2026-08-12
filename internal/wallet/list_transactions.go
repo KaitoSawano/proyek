@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
 )
 
 // ListTxWallet is the wallet surface required to build transaction history.
@@ -224,7 +224,7 @@ func processBlockWithSends(
 }
 
 // appendConfirmedChainSends walks genesis..tip on the main chain, replays UTXO in memory,
-// and appends one negative-amount "send" row per wallet spend (Bitcoin-style listtransactions).
+// and appends one negative-amount "send" row per wallet spend (Xcosh-style listtransactions).
 func appendConfirmedChainSends(
 	w ListTxWallet,
 	tipHeight, cbMaturity uint32,

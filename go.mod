@@ -1,4 +1,4 @@
-module github.com/bams-repo/fairchain
+module github.com/bams-repo/xcosh
 
 go 1.25.8
 

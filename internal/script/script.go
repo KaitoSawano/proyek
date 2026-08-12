@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -9,8 +9,8 @@ package script
 import (
 	"fmt"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
 )
@@ -31,9 +31,9 @@ const (
 
 const (
 	maxStackSize      = 1000
-	maxScriptSize     = 10000 // Bitcoin consensus limit.
-	maxOpsPerScript   = 201   // Bitcoin limit on non-push opcodes per script.
-	maxStackElemSize  = 520   // Bitcoin limit on individual stack element size.
+	maxScriptSize     = 10000 // Xcosh consensus limit.
+	maxOpsPerScript   = 201   // Xcosh limit on non-push opcodes per script.
+	maxStackElemSize  = 520   // Xcosh limit on individual stack element size.
 )
 
 // Verify executes the combined script (sigScript + pkScript) and returns nil
@@ -83,7 +83,7 @@ func Verify(sigScript, pkScript []byte, tx *types.Transaction, inputIdx int) err
 	}
 
 	// Cleanstack: exactly one element must remain after execution.
-	// This prevents non-canonical transaction forms and matches Bitcoin's
+	// This prevents non-canonical transaction forms and matches Xcosh's
 	// SCRIPT_VERIFY_CLEANSTACK behavior.
 	if vm.stack.size() != 1 {
 		return fmt.Errorf("cleanstack violation: %d items remain on stack (expected 1)", vm.stack.size())
@@ -312,7 +312,7 @@ func bytesEqual(a, b []byte) bool {
 	return true
 }
 
-// isTrue implements Bitcoin's CastToBool: a byte vector is false if it is
+// isTrue implements Xcosh's CastToBool: a byte vector is false if it is
 // empty, all zeros, or negative zero (0x80 in the last byte with all other
 // bytes zero). Everything else is true.
 func isTrue(data []byte) bool {

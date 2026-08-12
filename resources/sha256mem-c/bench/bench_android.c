@@ -34,7 +34,7 @@
  *   ./sha256mem_bench 120          # 120s, auto threads
  *   ./sha256mem_bench 300 4        # 300s, exactly 4 threads
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 
@@ -487,7 +487,7 @@ int main(int argc, char **argv) {
 	detect_big_cores();
 
 	printf("╔══════════════════════════════════════════════════════════════╗\n");
-	printf("║      sha256mem Benchmark — Fairchain PoW (Optimized)       ║\n");
+	printf("║      sha256mem Benchmark — Xcosh PoW (Optimized)       ║\n");
 	printf("╠══════════════════════════════════════════════════════════════╣\n");
 	printf("║  Buffer:  %d slots × 32 bytes = %d MiB               ║\n",
 	       SHA256MEM_SLOTS, (int)(SHA256MEM_BUF_SIZE / (1024 * 1024)));
@@ -704,7 +704,7 @@ int main(int argc, char **argv) {
 		printf("\n  No thermal throttling detected during benchmark.\n");
 	}
 
-	printf("\n  Fairchain sha256mem — CPU PoW benchmark (optimized)\n");
+	printf("\n  Xcosh sha256mem — CPU PoW benchmark (optimized)\n");
 	printf("  https://github.com/bams-repo/go-chain\n\n");
 
 	free(temp_history);

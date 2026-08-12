@@ -1,9 +1,9 @@
 /*
- * sha256mem Stratum GPU Miner — Fairchain pool mining
+ * sha256mem Stratum GPU Miner — Xcosh pool mining
  * ====================================================
  * Connects to Stratum v1 and mines sha256mem v2 with the TMTO OpenCL kernel.
  *
- * Default pool is the in-wallet stratum server (Fairchain-Qt: Mining →
+ * Default pool is the in-wallet stratum server (Xcosh-Qt: Mining →
  * start stratum, default port 3333). Override with -o / -u / -p.
  *
  * Build:
@@ -16,7 +16,7 @@
  *   ./stratum_miner -o stratum+tcp://fair.suprnova.cc:3833 \
  *                   -u WALLET.worker -p x
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 
@@ -396,11 +396,11 @@ static void stratum_extranonce_subscribe(stratum_ctx *ctx)
 
 /*
  * Decode stratum prevhash — try BOTH standard conventions:
- *   1. Bitcoin/ckpool: each 4-byte group is byte-swapped vs internal LE
+ *   1. Xcosh/ckpool: each 4-byte group is byte-swapped vs internal LE
  *   2. Raw hex: direct hex-to-bytes (some pools)
  *
  * We use the 4-byte-group swap (ckpool convention) since that's what
- * Fairchain's own stratum server uses. Set PREVHASH_NOSWAP=1 to disable.
+ * Xcosh's own stratum server uses. Set PREVHASH_NOSWAP=1 to disable.
  */
 static void decode_stratum_prevhash(const char *hex, uint8_t out[32])
 {
@@ -481,7 +481,7 @@ static int handle_mining_notify(stratum_ctx *ctx, json_t *params)
 }
 
 /*
- * Convert standard Stratum difficulty to a Bitcoin-style big-endian target.
+ * Convert standard Stratum difficulty to a Xcosh-style big-endian target.
  * Suprnova's FAIR pool uses a standard stratum server, so share difficulty is
  * scored against the final sha256mem digest as a normal 256-bit BE hash.
  */
@@ -655,7 +655,7 @@ static int stratum_submit(stratum_ctx *ctx, const char *worker,
         en2_bytes[i] = (en2_val >> (8*i)) & 0xFF;
     bytes_to_hex(en2_bytes, ctx->extranonce2_size, en2_hex);
 
-    /* ntime: big-endian hex (Fairchain stratum convention) */
+    /* ntime: big-endian hex (Xcosh stratum convention) */
     sprintf(ntime_hex, "%08x", ntime);
 
     /* Standard stratum pools submit nonce as big-endian text; the server
@@ -696,7 +696,7 @@ int main(int argc, char **argv)
         else {
             fprintf(stderr,
                     "Usage: %s [-o stratum+tcp://HOST:PORT] [-u WORKER] [-p PASS] [--workers N]\n"
-                    "  Defaults: -o stratum+tcp://127.0.0.1:3333 -u tmto -p x (Fairchain-Qt stratum)\n",
+                    "  Defaults: -o stratum+tcp://127.0.0.1:3333 -u tmto -p x (Xcosh-Qt stratum)\n",
                     argv[0]);
             return 1;
         }
@@ -707,7 +707,7 @@ int main(int argc, char **argv)
 
     /* Parse pool URL: stratum+tcp://host:port */
     char pool_host[256] = {0};
-    /* Fairchain wallet stratum default; used when URL has no :port */
+    /* Xcosh wallet stratum default; used when URL has no :port */
     int pool_port = 3333;
     {
         const char *h = pool_url;
@@ -779,7 +779,7 @@ int main(int argc, char **argv)
     size_t total_vram = (size_t)num_workers * MEM_PER_WORKER;
 
     printf("═══════════════════════════════════════════════════\n");
-    printf("  sha256mem Stratum GPU Miner — Fairchain\n");
+    printf("  sha256mem Stratum GPU Miner — Xcosh\n");
     printf("═══════════════════════════════════════════════════\n");
     printf("  GPU:       %s\n", dev_name);
     printf("  VRAM:      %lu / %lu MiB\n",

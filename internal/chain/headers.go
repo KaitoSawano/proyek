@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // HeaderNode represents a validated block header in the header tree.
@@ -40,7 +40,7 @@ const (
 
 	// maxForkDepth is how far behind the best chain tip a fork can fall
 	// before its headers are pruned from the index to reclaim memory.
-	// Bitcoin Core uses nMinimumChainWork; for a small network, depth-based
+	// Xcosh Core uses nMinimumChainWork; for a small network, depth-based
 	// pruning is simpler and sufficient.
 	maxForkDepth uint32 = 2016
 )
@@ -73,13 +73,13 @@ type HeaderIndex struct {
 	// rejected tracks hashes of headers that failed validation (and their
 	// descendants). Prevents repeated validation of known-bad headers and
 	// the CPU cost of walking the parent chain for difficulty retarget.
-	// Bitcoin Core uses BLOCK_FAILED_VALID / BLOCK_FAILED_CHILD flags.
+	// Xcosh Core uses BLOCK_FAILED_VALID / BLOCK_FAILED_CHILD flags.
 	rejected      map[types.Hash]struct{}
 	rejectedOrder []types.Hash
 
 	// bestChainByHeight provides O(1) height-to-hash lookups for the best
 	// chain. Rebuilt when bestHeader changes. Index = height.
-	// Bitcoin Core uses CBlockIndex::pskip for O(log n); a flat slice is
+	// Xcosh Core uses CBlockIndex::pskip for O(log n); a flat slice is
 	// simpler and faster for our expected chain lengths.
 	bestChainByHeight []*HeaderNode
 }
@@ -174,7 +174,7 @@ func (idx *HeaderIndex) addHeaderLocked(header *types.BlockHeader, nowUnix uint3
 	}
 
 	// Reject immediately if this header or its parent is in the rejected set.
-	// Bitcoin Core marks descendants with BLOCK_FAILED_CHILD.
+	// Xcosh Core marks descendants with BLOCK_FAILED_CHILD.
 	if _, bad := idx.rejected[headerHash]; bad {
 		return nil, ErrRejectedHeader
 	}
@@ -515,7 +515,7 @@ func (idx *HeaderIndex) addRejectedLocked(hash types.Hash) {
 // buildAncestorLookup returns a function that looks up a header at a given
 // height by walking the parent chain from parentNode. This ensures that when
 // validating a fork header, we use the fork's own ancestors (and their
-// timestamps) rather than the best chain's. Bitcoin Core achieves this via
+// timestamps) rather than the best chain's. Xcosh Core achieves this via
 // CBlockIndex::GetAncestor which follows pskip pointers along the actual
 // chain ancestry. We use the bestChainByHeight shortcut only when the parent
 // is confirmed to be on the best chain.

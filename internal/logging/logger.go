@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -23,7 +23,7 @@ var (
 	// StratumDebugMode enables hyper-verbose stratum server diagnostics:
 	// every JSON message in/out, share validation byte dumps, header
 	// reconstruction details, target comparisons, and job generation.
-	// Activated by log-level "stratum" or FAIRCHAIN_LOGLEVEL=stratum.
+	// Activated by log-level "stratum" or XCOSH_LOGLEVEL=stratum.
 	StratumDebugMode bool
 )
 

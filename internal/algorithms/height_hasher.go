@@ -1,9 +1,9 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 package algorithms
 
-import "github.com/bams-repo/fairchain/internal/types"
+import "github.com/bams-repo/xcosh/internal/types"
 
 // HeightHasher extends Hasher with height-gated PoW (consensus forks).
 // Activation rules are configured when the hasher is constructed.

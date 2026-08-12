@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/coinparams"
 )
 
 const (
@@ -47,7 +47,7 @@ func String() string {
 	return fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
 }
 
-// UserAgent returns the BIP-style user agent (e.g. "/fairchain:0.1.0/").
+// UserAgent returns the BIP-style user agent (e.g. "/xcosh:0.1.0/").
 func UserAgent() string {
 	return fmt.Sprintf("%s%s/", coinparams.UserAgentPrefix, String())
 }
@@ -88,7 +88,7 @@ func (v SemVer) String() string {
 }
 
 // ExtractVersionFromUserAgent extracts the semver from a BIP-style user agent
-// string like "/fairchain:0.8.1/". Returns the version string and ok=true on
+// string like "/xcosh:0.8.1/". Returns the version string and ok=true on
 // success.
 func ExtractVersionFromUserAgent(ua string) (string, bool) {
 	ua = strings.TrimPrefix(ua, "/")

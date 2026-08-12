@@ -11,7 +11,7 @@
  *   - build_checkpoints returns last slot directly
  *   - rotate() intrinsic for arx_fill
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 

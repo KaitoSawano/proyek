@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -16,7 +16,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/coinparams"
 )
 
 // Config holds all node configuration.
@@ -109,7 +109,7 @@ func SaveConfig(path string, cfg *Config) error {
 	return os.WriteFile(path, data, 0600)
 }
 
-// LoadConf reads an INI-style config file (e.g. fairchain.conf).
+// LoadConf reads an INI-style config file (e.g. xcosh.conf).
 // Supports network sections: [main], [test], [regtest].
 // Options use the same names as CLI flags (without --).
 // Priority: CLI > conf > defaults.
@@ -207,7 +207,7 @@ func applyConfOption(cfg *Config, key, val string) {
 }
 
 // NetworkDataDir returns the network-specific data directory.
-// Bitcoin Core convention: mainnet uses the root, others get a subdirectory
+// Xcosh Core convention: mainnet uses the root, others get a subdirectory
 // whose name is controlled by ChainParams.DataDirName (e.g. "testnet0").
 func (c *Config) NetworkDataDir() string {
 	if c.DataDirName == "" {

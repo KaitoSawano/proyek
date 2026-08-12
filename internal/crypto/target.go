@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,14 +10,14 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // CompactToBig converts a compact "bits" representation to a full 256-bit target.
 // Format: the top byte is the exponent, the lower 3 bytes are the mantissa.
 // target = mantissa * 2^(8*(exponent-3))
 //
-// Matches Bitcoin Core's SetCompact: overflow encodings (exponent > 34, or
+// Matches Xcosh Core's SetCompact: overflow encodings (exponent > 34, or
 // mantissa too large for exponents 32-34) are clamped to zero, and negative
 // encodings return zero.
 func CompactToBig(compact uint32) *big.Int {
@@ -25,7 +25,7 @@ func CompactToBig(compact uint32) *big.Int {
 	negative := compact&0x00800000 != 0
 	exponent := compact >> 24
 
-	// Bitcoin Core overflow check: reject encodings that would produce a
+	// Xcosh Core overflow check: reject encodings that would produce a
 	// value exceeding 256 bits (2^256 - 1).
 	overflow := mantissa != 0 && ((exponent > 34) ||
 		(mantissa > 0xff && exponent > 33) ||

@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -15,13 +15,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256d"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	bitcoindiff "github.com/bams-repo/fairchain/internal/difficulty/bitcoin"
-	fcparams "github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256d"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	xcoshdiff "github.com/bams-repo/xcosh/internal/difficulty/xcosh"
+	fcparams "github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 func setupTestChain(t *testing.T) (*Chain, *fcparams.ChainParams) {
@@ -41,7 +41,7 @@ func setupTestChain(t *testing.T) (*Chain, *fcparams.ChainParams) {
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -59,7 +59,7 @@ func setupTestChain(t *testing.T) (*Chain, *fcparams.ChainParams) {
 	}
 	t.Cleanup(func() { s.Close() })
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)
@@ -108,7 +108,7 @@ func mineBlock(t *testing.T, c *Chain, p *fcparams.ChainParams) *types.Block {
 	}
 
 	target := crypto.CompactToHash(header.Bits)
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	found, _ := engine.SealHeader(&header, target, newHeight, p, 10000000)
 	if !found {
 		t.Fatal("could not mine block")
@@ -175,7 +175,7 @@ func mineBlockOnParent(t *testing.T, parentHash types.Hash, parentHeader *types.
 	}
 
 	target := crypto.CompactToHash(header.Bits)
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	found, _ := engine.SealHeader(&header, target, newHeight, p, 10000000)
 	if !found {
 		t.Fatal("could not mine block on parent")
@@ -277,7 +277,7 @@ func TestChainOrphan(t *testing.T) {
 		Bits:       p.InitialBits,
 	}
 	target := crypto.CompactToHash(header2.Bits)
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	engine.SealHeader(&header2, target, 2, p, 10000000)
 	block2 := &types.Block{Header: header2, Transactions: []types.Transaction{coinbase2}}
 
@@ -465,7 +465,7 @@ func setupRetargetChain(t *testing.T, interval uint32, blockSpacing time.Duratio
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -483,7 +483,7 @@ func setupRetargetChain(t *testing.T, interval uint32, blockSpacing time.Duratio
 	}
 	t.Cleanup(func() { s.Close() })
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)
@@ -517,7 +517,7 @@ func mineBlockWithTimestamp(t *testing.T, parentHash types.Hash, parentHeader *t
 
 	merkle, _ := crypto.ComputeMerkleRoot([]types.Transaction{coinbase})
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	bits := engine.CalcNextBits(parentHeader, parentHeight, getAncestor, p)
 
 	header := types.BlockHeader{
@@ -558,7 +558,7 @@ func mineBlockWithTimestamp(t *testing.T, parentHash types.Hash, parentHeader *t
 func TestRC1_SideChainAncestorLookupBug(t *testing.T) {
 	c, p := setupRetargetChain(t, 5, 60*time.Second)
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	baseTime := c.params.GenesisBlock.Header.Timestamp
 
 	// Phase 1: Mine 12 blocks on the main chain with 60s spacing (on-target).
@@ -862,7 +862,7 @@ func TestReorgAcrossRetargetBoundary(t *testing.T) {
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -880,7 +880,7 @@ func TestReorgAcrossRetargetBoundary(t *testing.T) {
 	}
 	t.Cleanup(func() { s.Close() })
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)

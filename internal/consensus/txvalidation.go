@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -11,11 +11,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/script"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/script"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
 )
 
 // BIP68 constants for interpreting nSequence values as relative timelocks.
@@ -26,7 +26,7 @@ const (
 	SequenceLockTimeGranularity = 9 // 2^9 = 512 seconds per unit for time-based relative locks.
 )
 
-// CheckTransactionFinality implements Bitcoin Core's IsFinalTx: a transaction is
+// CheckTransactionFinality implements Xcosh Core's IsFinalTx: a transaction is
 // final if its LockTime is 0, or LockTime < blockHeight (or blockTime if
 // LockTime >= 500_000_000), or all input sequences are 0xFFFFFFFF.
 func CheckTransactionFinality(tx *types.Transaction, blockHeight uint32, blockMedianTime uint32) error {
@@ -47,7 +47,7 @@ func CheckTransactionFinality(tx *types.Transaction, blockHeight uint32, blockMe
 	}
 
 	// LockTime >= 500_000_000 is interpreted as a Unix timestamp;
-	// otherwise it's a block height. This matches Bitcoin Core's threshold.
+	// otherwise it's a block height. This matches Xcosh Core's threshold.
 	const lockTimeThreshold = 500_000_000
 
 	if tx.LockTime < lockTimeThreshold {
@@ -118,7 +118,7 @@ func CheckSequenceLocks(tx *types.Transaction, blockHeight uint32, blockMedianTi
 //
 // medianTimePast is the BIP113 median-time-past of the parent chain, computed
 // from the preceding 11 blocks. Callers must pre-compute this via
-// consensus.CalcMedianTimePast and pass it in. This matches Bitcoin Core's
+// consensus.CalcMedianTimePast and pass it in. This matches Xcosh Core's
 // GetMedianTimePast() usage for locktime enforcement.
 //
 // txHashes is an optional slice of pre-computed transaction hashes. When
@@ -135,7 +135,7 @@ func ValidateTransactionInputs(block *types.Block, utxoSet *utxo.Set, height uin
 
 	// Track outputs created by earlier transactions in this block so that
 	// later transactions can spend them (intra-block transaction chaining).
-	// Bitcoin Core maintains a CCoinsViewCache that layers block-local
+	// Xcosh Core maintains a CCoinsViewCache that layers block-local
 	// changes over the persistent UTXO set; this map serves the same role.
 	createdInBlock := make(map[[36]byte]*utxo.UtxoEntry)
 

@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -12,15 +12,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256d"
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	bitcoindiff "github.com/bams-repo/fairchain/internal/difficulty/bitcoin"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	fcparams "github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256d"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	xcoshdiff "github.com/bams-repo/xcosh/internal/difficulty/xcosh"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	fcparams "github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 func setupTestMiner(t *testing.T) (*Miner, *chain.Chain, *fcparams.ChainParams) {
@@ -39,7 +39,7 @@ func setupTestMiner(t *testing.T) (*Miner, *chain.Chain, *fcparams.ChainParams) 
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -57,7 +57,7 @@ func setupTestMiner(t *testing.T) (*Miner, *chain.Chain, *fcparams.ChainParams) 
 	}
 	t.Cleanup(func() { s.Close() })
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := chain.New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)

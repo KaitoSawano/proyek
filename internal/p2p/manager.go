@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -21,16 +21,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	"github.com/bams-repo/fairchain/internal/metrics"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/protocol"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/version"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	"github.com/bams-repo/xcosh/internal/metrics"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/protocol"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/version"
 )
 
 // TimeSampler accepts peer clock samples for network-adjusted time.
@@ -57,7 +57,7 @@ type Manager struct {
 	localNonce     uint64
 	bestPeerHeight uint32
 
-	// Ban list: IP → expiry time. Keyed by IP (no port) to match Bitcoin Core.
+	// Ban list: IP → expiry time. Keyed by IP (no port) to match Xcosh Core.
 	banMu  sync.RWMutex
 	banned map[string]time.Time
 
@@ -79,7 +79,7 @@ type Manager struct {
 
 	// Per-peer sync request throttle: prevents spamming getblocks per peer when
 	// already waiting for a response. Enables parallel block requests from
-	// multiple peers during IBD (Bitcoin Core parity).
+	// multiple peers during IBD (Xcosh Core parity).
 	lastSyncReqPerPeer   map[string]time.Time
 	lastSyncReqPerPeerMu sync.Mutex
 
@@ -110,7 +110,7 @@ type Manager struct {
 	headerSyncCaughtUp bool
 	headerSyncDeadline time.Time // cumulative download deadline for current sync peer
 
-	// Bitcoin Core parity: peers that stalled during header sync are excluded
+	// Xcosh Core parity: peers that stalled during header sync are excluded
 	// from re-selection until a cooldown expires. Prevents the highest-height
 	// peer from being immediately re-picked after rotation (the root cause of
 	// the "stuck on a lying peer" bug).
@@ -131,7 +131,7 @@ type Manager struct {
 	// Prevents flooding peers with requestHeaders every 100ms tick.
 	lastZeroAssignRecovery time.Time
 
-	// Block sync stall / orphan recovery (Bitcoin Core–style re-fetch from valid tip).
+	// Block sync stall / orphan recovery (Xcosh Core–style re-fetch from valid tip).
 	blockSyncRecoveriesSinceTip int // consecutive recoveries without chain tip advance
 	blockSyncOrphanFailHash     types.Hash
 	blockSyncOrphanFailCount    int
@@ -145,7 +145,7 @@ type Manager struct {
 	fastSyncLastRecv   time.Time // last time a block was received from fast sync peer
 	fastSyncFallback   bool      // true = fast sync failed, use parallel scheduler
 
-	// Bitcoin Core parity: once IBD finishes, it latches and never reverts
+	// Xcosh Core parity: once IBD finishes, it latches and never reverts
 	// to true until the process restarts (m_cached_finished_ibd).
 	finishedIBD bool
 
@@ -184,7 +184,7 @@ type Manager struct {
 	probeMu      sync.Mutex
 	probeWaiters map[uint64]chan bool
 
-	// External address discovery (Bitcoin Core parity: addrlocal).
+	// External address discovery (Xcosh Core parity: addrlocal).
 	// When listening on 0.0.0.0, the node learns its routable IP from the
 	// AddrRecv field peers send in their version messages. A simple vote
 	// across peers prevents a single liar from poisoning our external addr.
@@ -235,7 +235,7 @@ const (
 	maxSeenBlocks = 10000
 	maxSeenTxs    = 50000
 
-	// Reconnection backoff parameters. Bitcoin Core uses aggressive backoff
+	// Reconnection backoff parameters. Xcosh Core uses aggressive backoff
 	// but has many DNS seeds to fall back on. For a small network with few
 	// seeds, a 60-second cap prevents extended isolation.
 	backoffBase = 5 * time.Second
@@ -262,18 +262,18 @@ const (
 	maxStallsBeforeRotate          = 2
 	maxStallsBeforeBan             = 6
 
-	// Bitcoin Core parity: cooldown before a failed header sync peer can be
+	// Xcosh Core parity: cooldown before a failed header sync peer can be
 	// re-selected. Core achieves this implicitly via disconnect + fSyncStarted
 	// gating; we use an explicit cooldown since we don't disconnect on rotate.
 	headerSyncFailedCooldown = 5 * time.Minute
 
-	// Bitcoin Core parity (ConsiderEviction): disconnect outbound peers that
+	// Xcosh Core parity (ConsiderEviction): disconnect outbound peers that
 	// claim a chain height they never prove with headers. Core uses 20min +
 	// 2min; smaller values for a small network where stalls are more damaging.
 	chainSyncTimeout      = 10 * time.Minute
 	chainSyncResponseTime = 2 * time.Minute
 
-	// Bitcoin Core parity (HEADERS_DOWNLOAD_TIMEOUT): cumulative deadline for
+	// Xcosh Core parity (HEADERS_DOWNLOAD_TIMEOUT): cumulative deadline for
 	// a header sync peer to deliver headers. Core uses 15min base + 1ms per
 	// expected header; smaller base for a small network.
 	headerDownloadTimeoutBase      = 5 * time.Minute
@@ -319,7 +319,7 @@ func (b *addrBudget) consume(n int) {
 }
 
 // boundedHashSet is a bounded set of hashes with FIFO eviction, modeled after
-// Bitcoin Core's CRollingBloomFilter used for inventory deduplication.
+// Xcosh Core's CRollingBloomFilter used for inventory deduplication.
 type boundedHashSet struct {
 	mu    sync.Mutex
 	items map[types.Hash]struct{}
@@ -389,8 +389,8 @@ func (s *boundedHashSet) evictUntilSpace() {
 
 // ManagerOptions holds optional configuration for the P2P manager.
 type ManagerOptions struct {
-	ConnectOnly []string // When non-empty, connect ONLY to these peers (Bitcoin Core -connect).
-	NoSeedNodes bool     // Suppress hardcoded SeedNodes from ChainParams (Bitcoin Core -noseednode).
+	ConnectOnly []string // When non-empty, connect ONLY to these peers (Xcosh Core -connect).
+	NoSeedNodes bool     // Suppress hardcoded SeedNodes from ChainParams (Xcosh Core -noseednode).
 }
 
 // NewManager creates a new P2P manager. ts may be nil if no time adjustment is needed.
@@ -572,7 +572,7 @@ func (m *Manager) ShouldMine() bool {
 
 		if peerCount == 0 {
 			// Local / isolated testing: allow mining with zero peers when set.
-			v := strings.TrimSpace(os.Getenv("FAIRCHAIN_ALLOW_MINING_NO_PEERS"))
+			v := strings.TrimSpace(os.Getenv("XCOSH_ALLOW_MINING_NO_PEERS"))
 			if v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes") {
 				return true
 			}
@@ -729,7 +729,7 @@ func validatePeerAddress(addr string) error {
 //
 // When localLoopback is true (the node itself is listening on loopback),
 // loopback addresses are accepted — this enables mesh formation for testnet,
-// regtest, and local multi-node setups. Bitcoin Core doesn't need this because
+// regtest, and local multi-node setups. Xcosh Core doesn't need this because
 // it uses a different discovery mechanism for regtest; for a small network
 // that relies on addr gossip for mesh formation, this is necessary.
 func validateGossipAddress(addr string, localLoopback ...bool) error {
@@ -762,7 +762,7 @@ func validateGossipAddress(addr string, localLoopback ...bool) error {
 }
 
 // isLikelyListenPort returns true if the port looks like a deliberately chosen
-// listen port rather than an OS-assigned ephemeral port. Bitcoin Core's AddrMan
+// listen port rather than an OS-assigned ephemeral port. Xcosh Core's AddrMan
 // penalizes non-default-port addresses; we take a simpler approach and reject
 // addresses with ports in the typical ephemeral range (32768–65535) unless they
 // match the network's default port. This prevents inbound connection addresses
@@ -853,7 +853,7 @@ func (m *Manager) BroadcastBlock(hash types.Hash, block *types.Block) {
 	inv.Encode(&invBuf)
 	invPayload := invBuf.Bytes()
 
-	// Bitcoin Core (BIP 152) pushes full blocks to ~3 high-bandwidth relay
+	// Xcosh Core (BIP 152) pushes full blocks to ~3 high-bandwidth relay
 	// peers and sends inv to the rest. This prevents send-queue flooding on
 	// nodes with many connections while keeping relay latency low.
 	const maxDirectPush = 3
@@ -932,7 +932,7 @@ func (m *Manager) BroadcastTx(hash types.Hash) {
 // --- Ban management ---
 
 // extractIP strips the port from an addr string to get the bare IP,
-// matching Bitcoin Core's per-IP (not per-connection) ban behavior.
+// matching Xcosh Core's per-IP (not per-connection) ban behavior.
 func extractIP(addr string) string {
 	host, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -1022,7 +1022,7 @@ func (m *Manager) canReconnect(addr string) bool {
 }
 
 // canReconnectSeedEmergency returns true for seed nodes when the node has
-// zero peers. This is the "last resort" equivalent of Bitcoin Core's DNS
+// zero peers. This is the "last resort" equivalent of Xcosh Core's DNS
 // seed fallback — without it a small network with few seeds can sit
 // isolated for the full backoff duration.
 //
@@ -1090,7 +1090,7 @@ func (m *Manager) triggerIBDRecovery(reason, peerAddr string) {
 		"peer", peerAddr)
 
 	// Actively refresh headers from all peers to detect fork divergence.
-	// Bitcoin Core re-evaluates chain tips on stall; for a small network
+	// Xcosh Core re-evaluates chain tips on stall; for a small network
 	// we explicitly ask every peer for their latest headers.
 	if m.headerIndex != nil {
 		m.mu.RLock()
@@ -1152,7 +1152,7 @@ func (m *Manager) outboundCount() int {
 }
 
 // maxOutboundPerSubnet limits how many outbound peers may share a /16 subnet.
-// Bitcoin Core uses 1 to resist eclipse attacks; we use 2 to be slightly more
+// Xcosh Core uses 1 to resist eclipse attacks; we use 2 to be slightly more
 // lenient for small networks where operators may share a hosting provider.
 const maxOutboundPerSubnet = 2
 
@@ -1193,7 +1193,7 @@ func (m *Manager) outboundSubnetCount(sn string) int {
 	return count
 }
 
-// --- Inbound eviction (Bitcoin Core parity) ---
+// --- Inbound eviction (Xcosh Core parity) ---
 // When inbound slots are full and a new inbound peer connects, evict the
 // worst-performing inbound peer. "Worst" = highest ping latency among those
 // with the shortest connection time, excluding peers that recently relayed
@@ -1255,7 +1255,7 @@ func (m *Manager) acceptLoop(ctx context.Context) {
 		}
 		m.mu.Unlock()
 
-		// Bitcoin Core does not enforce a per-IP inbound limit. Multiple
+		// Xcosh Core does not enforce a per-IP inbound limit. Multiple
 		// nodes behind NAT legitimately share the same public IP. Sybil
 		// resistance is handled by the eviction logic when slots are full.
 		if inboundCount >= m.maxInbound {
@@ -1359,7 +1359,7 @@ func (m *Manager) reconnectLoop(ctx context.Context) {
 
 			// -connect mode: always maintain connections to the explicit list,
 			// then also connect to discovered peers for mesh formation.
-			// Bitcoin Core's strict -connect prevents discovery, but for a small
+			// Xcosh Core's strict -connect prevents discovery, but for a small
 			// network this creates an unworkable hub-and-spoke topology.
 			//
 			// Mandatory -connect targets MUST be attempted even when outbound
@@ -1420,7 +1420,7 @@ func (m *Manager) reconnectLoop(ctx context.Context) {
 
 			// Try stored peers. At 0 peers, attempt up to 3 stored peers per
 			// tick to recover faster. With few outbounds, try more so addr relay
-			// can fill slots (Bitcoin Core opens multiple feeler connections).
+			// can fill slots (Xcosh Core opens multiple feeler connections).
 			maxStored := 1
 			if totalPeers == 0 {
 				maxStored = 3
@@ -1670,7 +1670,7 @@ func (m *Manager) handlePeer(ctx context.Context, peer *Peer) {
 		peer.SendMessage(protocol.CmdSendHeaders, nil)
 	}
 
-	// Bitcoin Core parity: if the peer advertises a higher chain than ours,
+	// Xcosh Core parity: if the peer advertises a higher chain than ours,
 	// immediately request blocks so we catch up even when the sync state
 	// machine considers us "synced" (small gaps below its thresholds).
 	_, ourHeight := m.chain.Tip()
@@ -1699,14 +1699,14 @@ func (m *Manager) handlePeer(ctx context.Context, peer *Peer) {
 			return
 		}
 
-		// Bitcoin Core parity: do not banscore/ban peers for high message rate
+		// Xcosh Core parity: do not banscore/ban peers for high message rate
 		// during IBD or before IBD has ever completed. Sync traffic can be
 		// bursty and banning seeds can strand small networks. The finishedIBD
 		// latch ensures rate limiting only activates once we've fully synced
 		// at least once (covers INITIAL, HEADER_SYNC, and BLOCK_SYNC states).
 		if m.finishedIBD && !m.IsSyncing() {
 			// Rate-limit only truly unsolicited/abusive traffic. Core protocol
-			// messages used for sync, relay, and liveness are exempt — Bitcoin
+			// messages used for sync, relay, and liveness are exempt — Xcosh
 			// Core does not rate-limit inv, tx, block, headers, or any of the
 			// request/response commands.
 			if !peer.CheckRateLimit() {
@@ -1731,7 +1731,7 @@ func (m *Manager) handlePeer(ctx context.Context, peer *Peer) {
 	}
 }
 
-// --- Ping/pong keepalive (Bitcoin Core parity: BIP 31) ---
+// --- Ping/pong keepalive (Xcosh Core parity: BIP 31) ---
 
 // pingLoop sends a ping to every connected peer every PingInterval.
 func (m *Manager) pingLoop(ctx context.Context) {
@@ -1937,7 +1937,7 @@ func (m *Manager) readAndProcessVersion(peer *Peer) error {
 
 	peer.SetVersion(&theirVersion)
 
-	// Bitcoin Core parity (addrlocal): learn our external IP from AddrRecv.
+	// Xcosh Core parity (addrlocal): learn our external IP from AddrRecv.
 	// When listening on 0.0.0.0, the remote peer tells us what address they
 	// connected to — that's our routable IP. We use a simple vote across
 	// peers to prevent a single malicious peer from poisoning our addr.
@@ -1959,7 +1959,7 @@ func (m *Manager) readAndProcessVersion(peer *Peer) error {
 // our routable external address. This solves the 0.0.0.0 problem: when listening
 // on all interfaces, the node cannot know its public IP. Peers tell us what
 // address they connected to (AddrRecv), and we use majority vote across peers
-// to select the most-reported IP. This matches Bitcoin Core's "addrlocal" logic.
+// to select the most-reported IP. This matches Xcosh Core's "addrlocal" logic.
 func (m *Manager) learnExternalAddr(addrRecv string) {
 	host, _, err := net.SplitHostPort(addrRecv)
 	if err != nil {
@@ -2351,7 +2351,7 @@ func (m *Manager) handleMessage(ctx context.Context, peer *Peer, hdr *protocol.M
 			accepted = append(accepted, a)
 		}
 
-		// Bitcoin Core parity: immediately relay fresh addresses to 1-2 random
+		// Xcosh Core parity: immediately relay fresh addresses to 1-2 random
 		// peers (excluding the sender). This creates rapid gossip propagation
 		// instead of waiting for the 2-minute broadcast tick or getaddr.
 		if len(accepted) > 0 && !m.IsSyncing() {
@@ -2383,7 +2383,7 @@ func (m *Manager) handleMessage(ctx context.Context, peer *Peer, hdr *protocol.M
 }
 
 func (m *Manager) handleInv(peer *Peer, inv *protocol.InvMsg) {
-	// Bitcoin Core behavior:
+	// Xcosh Core behavior:
 	// - During header sync, ignore block invs (header-first pipeline).
 	// - During IBD block sync, do process block invs to drive getdata.
 	// - During IBD, ignore tx invs (they'll come in blocks anyway).
@@ -2447,7 +2447,7 @@ func (m *Manager) handleInv(peer *Peer, inv *protocol.InvMsg) {
 				}
 
 				// If we have header index info, bias toward blocks that are
-				// plausibly connectable soon (tip+1, tip+2, ...), like Bitcoin.
+				// plausibly connectable soon (tip+1, tip+2, ...), like Xcosh.
 				// Unknown heights are still allowed, but deprioritized below.
 				if m.headerIndex != nil {
 					if node := m.headerIndex.GetHeader(iv.Hash); node != nil {
@@ -2494,7 +2494,7 @@ func (m *Manager) handleInv(peer *Peer, inv *protocol.InvMsg) {
 	if legacyIBD {
 		// Build a prioritized getdata batch from inv.
 		//
-		// Bitcoin Core parity: prefer a contiguous run starting at tip+1.
+		// Xcosh Core parity: prefer a contiguous run starting at tip+1.
 		// Requesting blocks far ahead of the tip creates orphan cascades and
 		// can deadlock near the end of IBD when only a few blocks remain.
 		type hv struct {
@@ -2590,7 +2590,7 @@ func (m *Manager) handleInv(peer *Peer, inv *protocol.InvMsg) {
 }
 
 // maxGetDataBlockResponses caps the number of blocks served per getdata message
-// to prevent a single peer from triggering a multi-GB bandwidth burst. Bitcoin
+// to prevent a single peer from triggering a multi-GB bandwidth burst. Xcosh
 // Core processes getdata batches and limits to avoid this amplification vector.
 const maxGetDataBlockResponses = 500
 
@@ -2762,7 +2762,7 @@ func (m *Manager) handleBlock(peer *Peer, block *types.Block) {
 	if state == SyncStateBlockSync && m.blockScheduler != nil {
 		if m.blockScheduler.BlockReceived(blockHash, block, peer.Addr()) ||
 			m.blockScheduler.TryStageUnsolicited(blockHash, block, peer.Addr()) {
-			// Bitcoin Core parity: FindNextBlocksToDownload is called on
+			// Xcosh Core parity: FindNextBlocksToDownload is called on
 			// every block receipt. Immediately assign new work to the
 			// delivering peer to eliminate idle gaps between requests.
 			hashes := m.blockScheduler.AssignWork(peer.Addr(), DefaultMaxInFlightPerPeer, peer.BestHeight())
@@ -3016,10 +3016,10 @@ func (m *Manager) handleGetBlocks(peer *Peer, msg *protocol.GetBlocksMsg) {
 	}
 }
 
-// --- Addr gossip (Bitcoin Core parity) ---
+// --- Addr gossip (Xcosh Core parity) ---
 
 // handleGetAddr responds to a getaddr request with known peer addresses.
-// Bitcoin Core only responds to one getaddr per connection to prevent
+// Xcosh Core only responds to one getaddr per connection to prevent
 // topology scraping via repeated reconnection.
 func (m *Manager) handleGetAddr(peer *Peer) {
 	if !peer.MarkGetAddrResponded() {
@@ -3038,7 +3038,7 @@ func (m *Manager) handleGetAddr(peer *Peer) {
 // gatherAddresses collects up to limit known peer addresses for addr relay.
 // Only includes addresses with plausible listen ports. For inbound peers
 // without AddrFrom, the connection address is an ephemeral port and is
-// excluded — matching Bitcoin Core's behavior of only gossiping reachable addrs.
+// excluded — matching Xcosh Core's behavior of only gossiping reachable addrs.
 func (m *Manager) gatherAddresses(limit int) []string {
 	m.mu.RLock()
 	connected := make([]string, 0, len(m.peers))
@@ -3132,7 +3132,7 @@ func (m *Manager) sendGetAddr(peer *Peer) {
 
 // relayAddrs immediately forwards fresh addresses to 1-2 random connected
 // peers, excluding the original sender. Addresses relayed in the last 10
-// minutes are suppressed to prevent amplification loops. This matches Bitcoin
+// minutes are suppressed to prevent amplification loops. This matches Xcosh
 // Core's behavior of relaying fresh addr messages on receipt.
 func (m *Manager) relayAddrs(addrs []string, sender *Peer) {
 	const relayCooldown = 10 * time.Minute
@@ -3188,7 +3188,7 @@ func (m *Manager) relayAddrs(addrs []string, sender *Peer) {
 }
 
 // addrBroadcastLoop periodically sends a small set of known peer addresses to
-// a random subset of connected peers. Bitcoin Core uses Poisson-timed relay
+// a random subset of connected peers. Xcosh Core uses Poisson-timed relay
 // (~24h average for self-advertisement); we use 2 minutes and send to only
 // 2 random peers per tick to avoid addr gossip flooding the message loop.
 func (m *Manager) addrBroadcastLoop(ctx context.Context) {
@@ -3448,7 +3448,7 @@ func (m *Manager) syncLoop(ctx context.Context) {
 			state := m.syncState
 			m.syncStateMu.RUnlock()
 
-			// Bitcoin Core parity: periodically check for peers that claim
+			// Xcosh Core parity: periodically check for peers that claim
 			// tall chains but never prove them (ConsiderEviction + evict
 			// extra outbounds). Core runs this every 45s.
 			if time.Since(lastEvictionCheck) >= 45*time.Second {
@@ -3539,7 +3539,7 @@ func (m *Manager) peerBestHeightV2() uint32 {
 	return best
 }
 
-// isInitialBlockDownload mirrors Bitcoin Core's IsInitialBlockDownload():
+// isInitialBlockDownload mirrors Xcosh Core's IsInitialBlockDownload():
 // tip timestamp age (stale chain) plus catch-up when peers advertise a longer
 // chain. Without the peer check, a node with a "fresh" tip can latch IBD off
 // while still blocks behind — then never pulls the main chain (chaos / restart).
@@ -3825,7 +3825,7 @@ func (m *Manager) handleHeaderSyncTick() {
 		m.headerSyncStalls = 0
 		m.headerSyncCaughtUp = false
 
-		// Bitcoin Core parity: cumulative header download deadline. Core uses
+		// Xcosh Core parity: cumulative header download deadline. Core uses
 		// HEADERS_DOWNLOAD_TIMEOUT_BASE + 1ms * expected_headers. We compute
 		// the expected gap from the peer's claimed height.
 		gap := uint32(0)
@@ -3884,7 +3884,7 @@ func (m *Manager) handleHeaderSyncTick() {
 		return
 	}
 
-	// Bitcoin Core parity: cumulative header download deadline. If the sync
+	// Xcosh Core parity: cumulative header download deadline. If the sync
 	// peer has not delivered enough headers within the scaled timeout, treat
 	// it as failed and rotate. This catches peers that trickle just enough
 	// to avoid per-stall rotation but never actually make real progress.
@@ -4026,7 +4026,7 @@ func (m *Manager) applyBlockDownloadRecovery() int {
 	m.blockSyncLastProgress = time.Now()
 
 	// Request fresh headers from all connected peers so the header index
-	// can discover if it's on a losing fork. Bitcoin Core re-evaluates chain
+	// can discover if it's on a losing fork. Xcosh Core re-evaluates chain
 	// state during CheckBlockDownloadTimeout; for a small network we
 	// explicitly re-request headers to learn about any fork we missed.
 	if m.headerIndex != nil {
@@ -4075,7 +4075,7 @@ func (m *Manager) recordBlockSyncRecoveryEvent(context string) (recoveries int, 
 // reconcileBlockDownloadWithChainTip resets scheduler and orphan state when the
 // scheduler's next-connect height diverges from chain tip+1. That can happen
 // after a prior bug or validation failure path advanced staging without a
-// matching main-chain tip (Bitcoin Core keeps tip and block-download cursors
+// matching main-chain tip (Xcosh Core keeps tip and block-download cursors
 // consistent; we recover instead of leaving an irrecoverable gap).
 func (m *Manager) reconcileBlockDownloadWithChainTip(reason string) {
 	if m.blockScheduler == nil {
@@ -4757,7 +4757,7 @@ func (m *Manager) handleSyncedTick() {
 // --- Header sync peer selection ---
 
 // considerEviction checks all outbound v2+ peers for chain-sync timeout.
-// Bitcoin Core's ConsiderEviction disconnects outbound peers that claim a tall
+// Xcosh Core's ConsiderEviction disconnects outbound peers that claim a tall
 // chain (via version message) but never prove it by delivering headers within
 // CHAIN_SYNC_TIMEOUT + HEADERS_RESPONSE_TIME. This prevents a single lying
 // peer from monopolizing the "best peer" slot indefinitely.
@@ -4950,7 +4950,7 @@ func (m *Manager) handleHeaders(peer *Peer, msg *protocol.HeadersMsg) {
 
 	// If the first header doesn't connect to any known header, ignore the
 	// batch. This is normal during initial sync when peers announce headers
-	// we can't yet connect. Bitcoin Core silently drops these — no penalty.
+	// we can't yet connect. Xcosh Core silently drops these — no penalty.
 	if !m.headerIndex.HasHeader(msg.Headers[0].PrevBlock) {
 		logging.SyncAuditDebug("handleHeaders: ignoring batch (first header does not connect to our header index)",
 			"peer", peer.Addr(),
@@ -4989,7 +4989,7 @@ func (m *Manager) handleHeaders(peer *Peer, msg *protocol.HeadersMsg) {
 		bestH := m.headerIndex.BestHeaderHeight()
 		peer.SetSyncedHeaders(int32(bestH))
 
-		// Bitcoin parity: a peer that delivers valid headers at height N
+		// Xcosh parity: a peer that delivers valid headers at height N
 		// necessarily has blocks up to N. Update its BestHeight so the
 		// block scheduler can assign work to this peer for those heights.
 		// Also update ProvenHeaderHeight for ConsiderEviction tracking.
@@ -5028,7 +5028,7 @@ func (m *Manager) handleHeaders(peer *Peer, msg *protocol.HeadersMsg) {
 			}
 		}
 
-		// Bitcoin Core header-first relay: when synced and a new header
+		// Xcosh Core header-first relay: when synced and a new header
 		// extends the chain tip, request the full block body via getdata.
 		m.syncStateMu.RLock()
 		state := m.syncState
@@ -5116,7 +5116,7 @@ func (m *Manager) requestBlocks(peer *Peer) {
 	addr := peer.Addr()
 	m.lastSyncReqPerPeerMu.Lock()
 	last := m.lastSyncReqPerPeer[addr]
-	// Even during IBD, avoid tight getblocks loops (Bitcoin has inflight
+	// Even during IBD, avoid tight getblocks loops (Xcosh has inflight
 	// tracking and won't re-ask continuously). Use a small spacing so we can
 	// still recover quickly when invs are missing.
 	if time.Since(last) < legacyGetBlocksMinSpacing {
@@ -5188,7 +5188,7 @@ func (m *Manager) requestBlocks(peer *Peer) {
 // requestOrphanParent sends a targeted getdata for a specific block hash to
 // the given peer. This is used when an orphan block is received — rather than
 // only doing a broad getblocks sync, we directly ask the source peer for the
-// missing parent block. Matches Bitcoin Core's approach of requesting missing
+// missing parent block. Matches Xcosh Core's approach of requesting missing
 // parents from the peer that provided the orphan.
 func (m *Manager) requestOrphanParent(peer *Peer, parentHash types.Hash) {
 	logging.P2PSyncDebug("requestOrphanParent enter",
@@ -5259,7 +5259,7 @@ func (m *Manager) orphanEvictionLoop(ctx context.Context) {
 }
 
 // mempoolExpiryLoop periodically sweeps transactions that have been in the
-// mempool longer than MempoolExpiry. Matches Bitcoin Core's periodic call to
+// mempool longer than MempoolExpiry. Matches Xcosh Core's periodic call to
 // CTxMemPool::Expire() which removes transactions older than -mempoolexpiry
 // (default 336 hours / 2 weeks).
 func (m *Manager) mempoolExpiryLoop(ctx context.Context) {

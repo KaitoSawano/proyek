@@ -9,9 +9,9 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256mem"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 		nonceHex = os.Args[9]
 	}
 
-	// Decode prevhash: default undoes Fairchain's 4-byte-group stratum swap.
+	// Decode prevhash: default undoes Xcosh's 4-byte-group stratum swap.
 	// Set PREVHASH_RAW=1 to test pools that use the notify bytes directly.
 	prevhashRaw, _ := hex.DecodeString(prevhashHex)
 	var prevBlock types.Hash
@@ -62,7 +62,7 @@ func main() {
 
 	fmt.Printf("Coinbase (%d bytes): %s\n", len(coinbase), hex.EncodeToString(coinbase))
 
-	// Compute coinbase hash using Fairchain's exact method
+	// Compute coinbase hash using Xcosh's exact method
 	var coinbaseTx types.Transaction
 	if err := coinbaseTx.Deserialize(bytes.NewReader(coinbase)); err != nil {
 		fmt.Fprintf(os.Stderr, "WARNING: coinbase deserialize failed: %v\n", err)
@@ -132,11 +132,11 @@ func buildAndHash(prevBlock types.Hash, merkleRootBE types.Hash, versionHex, nbi
 	rawHash := powHash.Reversed()
 	fmt.Printf("  rawHash:         %s\n", hex.EncodeToString(rawHash[:]))
 
-	// Compute difficulty with standard Bitcoin formula for each hash
+	// Compute difficulty with standard Xcosh formula for each hash
 	diff1BE, _ := hex.DecodeString("00000000FFFF0000000000000000000000000000000000000000000000000000")
 	diff1Num := new(big.Int).SetBytes(diff1BE)
 
-	fmt.Printf("\n  Difficulty calculations (standard Bitcoin diff1):\n")
+	fmt.Printf("\n  Difficulty calculations (standard Xcosh diff1):\n")
 
 	// SHA256 difficulty (treating as BE number)
 	seedNum := new(big.Int).SetBytes(seed[:])

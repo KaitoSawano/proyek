@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/version"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/version"
 )
 
 // ProtocolVersion re-exports the canonical wire protocol version from the
@@ -149,13 +149,13 @@ type GetHeadersMsg struct {
 
 // HeadersMsg carries a batch of block headers.
 // Each header is serialized as 80 bytes followed by a varint tx count of 0,
-// matching Bitcoin Core's wire format.
+// matching Xcosh Core's wire format.
 type HeadersMsg struct {
 	Headers []types.BlockHeader
 }
 
 // MaxHeadersPerMsg is the maximum number of headers allowed in a single
-// headers message (matches Bitcoin Core).
+// headers message (matches Xcosh Core).
 const MaxHeadersPerMsg = 2000
 
 // SendHeadersMsg is an empty message requesting the peer announce new blocks

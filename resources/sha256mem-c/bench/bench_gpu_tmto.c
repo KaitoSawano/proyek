@@ -16,7 +16,7 @@
  * CUDA miners (e.g. SRBMiner) are often materially faster; tune --workers if you
  * hit CL_MEM_OBJECT_ALLOCATION_FAILURE (reduce count).
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
     clGetDeviceInfo(device, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(dev_freq), &dev_freq, NULL);
 
     printf("==================================================================\n");
-    printf("     sha256mem v2 TMTO GPU Benchmark — Fairchain PoW\n");
+    printf("     sha256mem v2 TMTO GPU Benchmark — Xcosh PoW\n");
     printf("==================================================================\n");
     printf("  GPU:          %s\n", dev_name);
     printf("  Compute units: %u @ %u MHz\n", dev_cu, dev_freq);

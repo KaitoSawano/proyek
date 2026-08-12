@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -20,17 +20,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/config"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/miner"
-	"github.com/bams-repo/fairchain/internal/node"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
-	"github.com/bams-repo/fairchain/internal/version"
-	"github.com/bams-repo/fairchain/internal/wallet"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/config"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/miner"
+	"github.com/bams-repo/xcosh/internal/node"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/version"
+	"github.com/bams-repo/xcosh/internal/wallet"
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -72,9 +72,9 @@ func (a *App) startup(ctx context.Context) {
 	a.startupTime = time.Now()
 
 	logLevel := "info"
-	if v := os.Getenv("FAIRCHAIN_LOGLEVEL"); v != "" {
+	if v := os.Getenv("XCOSH_LOGLEVEL"); v != "" {
 		logLevel = strings.ToLower(v)
-	} else if v := os.Getenv("FAIRCHAIN_DEBUG"); v == "1" || v == "true" || strings.EqualFold(v, "yes") {
+	} else if v := os.Getenv("XCOSH_DEBUG"); v == "1" || v == "true" || strings.EqualFold(v, "yes") {
 		logLevel = "debug"
 	}
 	logging.Init(logLevel, "text")
@@ -88,7 +88,7 @@ func (a *App) startup(ctx context.Context) {
 	cfg := config.DefaultConfig()
 	cfg.Network = networkForBuild()
 
-	if d := strings.TrimSpace(os.Getenv("FAIRCHAIN_DATADIR")); d != "" {
+	if d := strings.TrimSpace(os.Getenv("XCOSH_DATADIR")); d != "" {
 		cfg.DataDir = d
 	}
 
@@ -101,9 +101,9 @@ func (a *App) startup(ctx context.Context) {
 	opts := node.Options{
 		NoRPCAuth: true,
 	}
-	if v := strings.TrimSpace(os.Getenv("FAIRCHAIN_NOSEEDNODE")); v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes") {
+	if v := strings.TrimSpace(os.Getenv("XCOSH_NOSEEDNODE")); v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes") {
 		opts.NoSeedNodes = true
-		logging.L.Info("hardcoded seed nodes suppressed (FAIRCHAIN_NOSEEDNODE)", "component", "wallet")
+		logging.L.Info("hardcoded seed nodes suppressed (XCOSH_NOSEEDNODE)", "component", "wallet")
 	}
 
 	a.cfg = cfg
@@ -147,9 +147,9 @@ func (a *App) startNode() {
 		return
 	}
 
-	if v := strings.TrimSpace(os.Getenv("FAIRCHAIN_MINING")); v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes") {
+	if v := strings.TrimSpace(os.Getenv("XCOSH_MINING")); v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes") {
 		n.SetMining(true)
-		logging.L.Info("mining enabled via FAIRCHAIN_MINING", "network", a.cfg.Network)
+		logging.L.Info("mining enabled via XCOSH_MINING", "network", a.cfg.Network)
 	}
 
 	a.node = n
@@ -164,7 +164,7 @@ func (a *App) startNode() {
 
 	a.irc = newIRCClient(ircConfig{
 		ServerAddr: "irc.libera.chat:6697",
-		Channel:    "#fairchain",
+		Channel:    "#xcosh",
 		NickPrefix: coinparams.NameLower,
 		SavedNick:  savedNick,
 		OnNickChange: func(nick string) {
@@ -330,7 +330,7 @@ func (a *App) GetBalance() (map[string]interface{}, error) {
 }
 
 // ListTransactions returns wallet transaction history derived from the UTXO set,
-// the mempool, and a main-chain replay for confirmed sends (Bitcoin-style listtransactions).
+// the mempool, and a main-chain replay for confirmed sends (Xcosh-style listtransactions).
 func (a *App) ListTransactions() ([]map[string]interface{}, error) {
 	if a.node == nil {
 		return nil, fmt.Errorf("node not initialized")
@@ -544,7 +544,7 @@ func (a *App) computeSyncProgress() float64 {
 }
 
 // GetSyncStatus returns detailed sync state for the sync overlay modal.
-// Mirrors the information shown by Bitcoin Core's modal sync dialog.
+// Mirrors the information shown by Xcosh Core's modal sync dialog.
 func (a *App) GetSyncStatus() (map[string]interface{}, error) {
 	if a.node == nil {
 		return nil, fmt.Errorf("node not initialized")

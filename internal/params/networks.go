@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -9,7 +9,7 @@ package params
 import (
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 	MaxMoneyValue = MinedSupply + MainnetPremineAmount
 
 	// MaxTxSize is the maximum serialized size of a single transaction in bytes.
-	// Bitcoin Core uses MAX_STANDARD_TX_WEIGHT / 4 ≈ 100,000 bytes for standard
+	// Xcosh Core uses MAX_STANDARD_TX_WEIGHT / 4 ≈ 100,000 bytes for standard
 	// transactions. This protects validation from CPU/memory exhaustion on
 	// oversized transactions.
 	MaxTxSize = 100_000
@@ -43,7 +43,7 @@ var (
 // and must not be changed. New genesis blocks should use coinparams.NameLower.
 
 // Mainnet is the primary network.
-// Economic parameters are aligned with Bitcoin mainnet.
+// Economic parameters are aligned with Xcosh mainnet.
 var Mainnet = &ChainParams{
 	Name:         "mainnet",
 	DataDirName:  "",
@@ -51,7 +51,7 @@ var Mainnet = &ChainParams{
 	DefaultPort:  19333,
 	AddressPrefix: 0x00,
 
-	// Pre-mined genesis (sha256mem). Coinbase: "fairchain genesis"
+	// Pre-mined genesis (sha256mem). Coinbase: "xcosh genesis"
 	// Timestamp: 1774175035 (2026-03-22T10:23:55Z)
 	// Initial difficulty: compact 0x1e346dbd (100× harder than 0x1f147ade).
 	// Display hash: 25e5c6c08aedc446584045db998974b6b7b816ac69c73255c2e8496949989576
@@ -73,7 +73,7 @@ var Mainnet = &ChainParams{
 			Version: 1,
 			Inputs: []types.TxInput{{
 				PreviousOutPoint: types.CoinbaseOutPoint,
-				SignatureScript:  []byte("fairchain genesis"),
+				SignatureScript:  []byte("xcosh genesis"),
 				Sequence:         0xFFFFFFFF,
 			}},
 			Outputs: []types.TxOutput{{
@@ -116,10 +116,10 @@ var Mainnet = &ChainParams{
 
 	MaxMempoolSize:    5000,
 	MinRelayTxFee:     1000,
-	MinRelayTxFeeRate: 1, // 1 sat/byte minimum, matching Bitcoin Core's default
-	MempoolExpiry:     336 * time.Hour, // 2 weeks, matching Bitcoin Core DEFAULT_MEMPOOL_EXPIRE
+	MinRelayTxFeeRate: 1, // 1 sat/byte minimum, matching Xcosh Core's default
+	MempoolExpiry:     336 * time.Hour, // 2 weeks, matching Xcosh Core DEFAULT_MEMPOOL_EXPIRE
 
-	// Bootstrap peers (must be fairchaind listening on mainnet DefaultPort 19333).
+	// Bootstrap peers (must be xcoshd listening on mainnet DefaultPort 19333).
 	// As of 2026-04 the public seed VPS hosts accept P2P on testnet port 19334 only;
 	// 19333/tcp is not open there, so mainnet nodes will not connect until those
 	// hosts run a mainnet listener on 19333 (or you add -seedpeer / config seeds).
@@ -158,7 +158,7 @@ var Testnet = &ChainParams{
 	AddressPrefix: 0x6F,
 
 	// Pre-mined genesis block (sha256mem, LE hash convention).
-	// Coinbase: "fairchain testnet1 genesis"
+	// Coinbase: "xcosh testnet1 genesis"
 	// Timestamp: 1744325400 (2025-04-10T22:30:00Z)
 	// Display hash: 242c396cebc08d71ed6de2cd1b17f2641f34d0edd42b57f79dc02f5be286c0c1
 	GenesisBlock: types.Block{
@@ -179,7 +179,7 @@ var Testnet = &ChainParams{
 			Version: 1,
 			Inputs: []types.TxInput{{
 				PreviousOutPoint: types.CoinbaseOutPoint,
-				SignatureScript:  []byte("fairchain testnet1 genesis"),
+				SignatureScript:  []byte("xcosh testnet1 genesis"),
 				Sequence:         0xFFFFFFFF,
 			}},
 			Outputs: []types.TxOutput{
@@ -232,7 +232,7 @@ var Testnet = &ChainParams{
 	MinRelayTxFeeRate: 1,
 	MempoolExpiry:     336 * time.Hour,
 
-	// Public testnet seeds (P2P 19334 — matches deployed fairchain-testnet.service).
+	// Public testnet seeds (P2P 19334 — matches deployed xcosh-testnet.service).
 	SeedNodes: []string{
 		"95.179.203.47:19334",
 		"207.246.117.14:19334",

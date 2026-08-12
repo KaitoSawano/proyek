@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -22,17 +22,17 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	"github.com/bams-repo/fairchain/internal/metrics"
-	"github.com/bams-repo/fairchain/internal/p2p"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/version"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	"github.com/bams-repo/xcosh/internal/metrics"
+	"github.com/bams-repo/xcosh/internal/p2p"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/version"
 )
 
 // AuthConfig holds RPC authentication settings.
@@ -60,7 +60,7 @@ type TxBroadcaster func(hash types.Hash)
 // be accepted locally but never propagated.
 type BlockBroadcaster func(hash types.Hash, block *types.Block)
 
-// Server provides a local HTTP JSON API matching Bitcoin Core's RPC interface.
+// Server provides a local HTTP JSON API matching Xcosh Core's RPC interface.
 type Server struct {
 	chain        *chain.Chain
 	engine       consensus.Engine
@@ -166,7 +166,7 @@ func New(addr string, c *chain.Chain, e consensus.Engine, mp *mempool.Mempool, p
 
 	mux := http.NewServeMux()
 
-	// Bitcoin Core parity: blockchain RPCs
+	// Xcosh Core parity: blockchain RPCs
 	mux.HandleFunc("/getblockchaininfo", s.handleGetBlockchainInfo)
 	mux.HandleFunc("/getblockcount", s.handleGetBlockCount)
 	mux.HandleFunc("/getbestblockhash", s.handleGetBestBlockHash)
@@ -175,40 +175,40 @@ func New(addr string, c *chain.Chain, e consensus.Engine, mp *mempool.Mempool, p
 	mux.HandleFunc("/getblockbyheight", s.handleGetBlockByHeight)
 	mux.HandleFunc("/getdifficulty", s.handleGetDifficulty)
 
-	// Bitcoin Core parity: network RPCs
+	// Xcosh Core parity: network RPCs
 	mux.HandleFunc("/getnetworkinfo", s.handleGetNetworkInfo)
 	mux.HandleFunc("/getpeerinfo", s.handleGetPeerInfo)
 	mux.HandleFunc("/getconnectioncount", s.handleGetConnectionCount)
 	mux.HandleFunc("/addnode", s.handleAddNode)
 	mux.HandleFunc("/disconnectnode", s.handleDisconnectNode)
 
-	// Bitcoin Core parity: mempool RPCs
+	// Xcosh Core parity: mempool RPCs
 	mux.HandleFunc("/getmempoolinfo", s.handleGetMempoolInfo)
 	mux.HandleFunc("/getrawmempool", s.handleGetRawMempool)
 	mux.HandleFunc("/getmempoolentry", s.handleGetMempoolEntry)
 
-	// Bitcoin Core parity: UTXO RPCs
+	// Xcosh Core parity: UTXO RPCs
 	mux.HandleFunc("/gettxout", s.handleGetTxOut)
 	mux.HandleFunc("/gettxoutsetinfo", s.handleGetTxOutSetInfo)
 
-	// Bitcoin Core parity: mining RPCs
+	// Xcosh Core parity: mining RPCs
 	mux.HandleFunc("/getblocktemplate", s.handleGetBlockTemplate)
 	mux.HandleFunc("/submitblock", s.handleSubmitBlock)
 	mux.HandleFunc("/getmininginfo", s.handleGetMiningInfo)
 	mux.HandleFunc("/getnetworkhashps", s.handleGetNetworkHashPS)
 	mux.HandleFunc("/preciousblock", s.handlePreciousBlock)
 
-	// Bitcoin Core parity: raw transaction RPCs
+	// Xcosh Core parity: raw transaction RPCs
 	mux.HandleFunc("/getrawtransaction", s.handleGetRawTransaction)
 
-	// Bitcoin Core JSON-RPC 1.0 dispatch (stratum pool compatibility)
+	// Xcosh Core JSON-RPC 1.0 dispatch (stratum pool compatibility)
 	mux.HandleFunc("/", s.handleJSONRPC)
 
-	// Bitcoin Core parity: control RPCs
+	// Xcosh Core parity: control RPCs
 	mux.HandleFunc("/getinfo", s.handleGetInfo)
 	mux.HandleFunc("/stop", s.handleStop)
 
-	// Bitcoin Core parity: wallet RPCs
+	// Xcosh Core parity: wallet RPCs
 	mux.HandleFunc("/getnewaddress", s.handleGetNewAddress)
 	mux.HandleFunc("/getbalance", s.handleGetBalance)
 	mux.HandleFunc("/listunspent", s.handleListUnspent)
@@ -230,7 +230,7 @@ func New(addr string, c *chain.Chain, e consensus.Engine, mp *mempool.Mempool, p
 	mux.HandleFunc("/listsinceblock", s.handleListSinceBlock)
 	mux.HandleFunc("/sendmany", s.handleSendMany)
 
-	// Bitcoin Core parity: wallet encryption RPCs
+	// Xcosh Core parity: wallet encryption RPCs
 	mux.HandleFunc("/encryptwallet", s.handleEncryptWallet)
 	mux.HandleFunc("/walletpassphrase", s.handleWalletPassphrase)
 	mux.HandleFunc("/walletlock", s.handleWalletLock)
@@ -263,7 +263,7 @@ func New(addr string, c *chain.Chain, e consensus.Engine, mp *mempool.Mempool, p
 
 // initAuth configures RPC authentication. If explicit credentials are provided
 // they are used directly. Otherwise a random cookie is generated and written to
-// disk, matching Bitcoin Core's -rpcauth cookie-file behavior.
+// disk, matching Xcosh Core's -rpcauth cookie-file behavior.
 // Returns an error if authentication cannot be established — the RPC server
 // must not start without authentication.
 func (s *Server) initAuth(auth *AuthConfig) error {
@@ -709,7 +709,7 @@ func (s *Server) handleSubmitBlock(w http.ResponseWriter, r *http.Request) {
 
 	var block types.Block
 
-	// Try hex-encoded block first (Bitcoin Core parity for stratum pools).
+	// Try hex-encoded block first (Xcosh Core parity for stratum pools).
 	hexStr := string(bytes.TrimSpace(body))
 	if isHexString(hexStr) {
 		blockBytes, decErr := hex.DecodeString(hexStr)
@@ -745,7 +745,7 @@ func (s *Server) handleSubmitBlock(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// handlePreciousBlock is a no-op that matches Bitcoin Core's preciousblock RPC.
+// handlePreciousBlock is a no-op that matches Xcosh Core's preciousblock RPC.
 // ckpool calls this after submitting a block to hint that the node should
 // prefer it as the chain tip.
 func (s *Server) handlePreciousBlock(w http.ResponseWriter, r *http.Request) {

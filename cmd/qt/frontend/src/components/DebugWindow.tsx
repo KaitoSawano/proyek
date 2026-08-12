@@ -155,7 +155,7 @@ function ConsoleTab() {
     {
       type: "output",
       text:
-        "Welcome to the Fairchain RPC console.\n" +
+        "Welcome to the Xcosh RPC console.\n" +
         "Use up and down arrows to navigate history, and Ctrl-L to clear screen.\n" +
         'Type "help" for an overview of available commands.\n' +
         "WARNING: Scammers have been active, telling users to type commands\n" +

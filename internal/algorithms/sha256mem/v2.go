@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 package sha256mem
@@ -7,7 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 const (

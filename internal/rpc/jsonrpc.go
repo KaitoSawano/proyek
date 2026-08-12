@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -20,15 +20,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
-	"github.com/bams-repo/fairchain/internal/version"
-	"github.com/bams-repo/fairchain/internal/wallet"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/version"
+	"github.com/bams-repo/xcosh/internal/wallet"
 )
 
-// JSON-RPC 1.0 request/response types matching Bitcoin Core's RPC interface.
+// JSON-RPC 1.0 request/response types matching Xcosh Core's RPC interface.
 // Stratum pool software (ckpool, Braiins, etc.) sends requests in this format.
 
 type jsonRPCRequest struct {
@@ -144,7 +144,7 @@ func (s *Server) handleJSONRPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Bitcoin Core supports batch JSON-RPC (array of requests). Stratum
+	// Xcosh Core supports batch JSON-RPC (array of requests). Stratum
 	// proxies sometimes batch multiple calls in a single HTTP request.
 	if trimmed[0] == '[' {
 		s.handleBatchJSONRPC(w, trimmed)
@@ -163,7 +163,7 @@ func (s *Server) handleJSONRPC(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleBatchJSONRPC processes an array of JSON-RPC requests and returns
-// an array of responses, matching Bitcoin Core's batch RPC behavior.
+// an array of responses, matching Xcosh Core's batch RPC behavior.
 const maxBatchSize = 100
 
 func (s *Server) handleBatchJSONRPC(w http.ResponseWriter, body []byte) {
@@ -656,7 +656,7 @@ func (s *Server) rpcSendRawTransaction(params []json.RawMessage) (interface{}, *
 
 // rpcGetRawTransaction returns a hex-encoded raw transaction. Checks the
 // mempool first, then scans the UTXO set to locate the block containing the
-// transaction. This matches Bitcoin Core's getrawtransaction behavior that
+// transaction. This matches Xcosh Core's getrawtransaction behavior that
 // ckpool and other stratum servers depend on.
 func (s *Server) rpcGetRawTransaction(params []json.RawMessage) (interface{}, *jsonRPCError) {
 	if len(params) < 1 {
@@ -987,7 +987,7 @@ func (s *Server) rpcGetRawChangeAddress(_ []json.RawMessage) (interface{}, *json
 	return addr, nil
 }
 
-// rpcSendMany implements Bitcoin Core's sendmany RPC for batch payouts.
+// rpcSendMany implements Xcosh Core's sendmany RPC for batch payouts.
 // Params: ["" (ignored account), {"addr":amount,...}, minconf, "comment", ["subtractfeefrom"]]
 func (s *Server) rpcSendMany(params []json.RawMessage) (interface{}, *jsonRPCError) {
 	if s.wallet == nil {
@@ -1242,7 +1242,7 @@ func (s *Server) rpcGetTransaction(params []json.RawMessage) (interface{}, *json
 	return result, nil
 }
 
-// rpcListSinceBlock implements Bitcoin Core's listsinceblock RPC.
+// rpcListSinceBlock implements Xcosh Core's listsinceblock RPC.
 // Params: ["blockhash", target_confirmations, include_watchonly]
 func (s *Server) rpcListSinceBlock(params []json.RawMessage) (interface{}, *jsonRPCError) {
 	if s.wallet == nil {

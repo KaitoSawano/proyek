@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // UtxoEntry represents a single unspent transaction output in the UTXO set.
@@ -373,7 +373,7 @@ func (s *Set) DisconnectBlock(block *types.Block, undo *BlockUndoData) error {
 // ConnectGenesis applies the genesis block to an empty UTXO set.
 // Genesis has no inputs to validate, only outputs to add.
 // Outputs with legacy placeholder scripts (empty or single-byte {0x00}) are
-// excluded from the UTXO set entirely, matching Bitcoin Core's behavior of
+// excluded from the UTXO set entirely, matching Xcosh Core's behavior of
 // never inserting the genesis coinbase into the UTXO set.
 func (s *Set) ConnectGenesis(block *types.Block) error {
 	for txIdx := range block.Transactions {

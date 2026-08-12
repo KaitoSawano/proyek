@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 package sha256mem
@@ -6,7 +6,7 @@ package sha256mem
 import (
 	"testing"
 
-	"github.com/bams-repo/fairchain/internal/params"
+	"github.com/bams-repo/xcosh/internal/params"
 )
 
 const testnetForkHeight = 85000

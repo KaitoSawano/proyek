@@ -9,9 +9,9 @@ A modular blockchain written in Go — designed to be forked, configured, and la
 
 ## What This Is
 
-go-chain is a complete, Bitcoin-parity blockchain node built from the ground up in Go. Every policy-level decision — proof-of-work algorithm, difficulty retargeting, coin identity, network parameters, and economics — lives behind a clean interface and can be swapped by editing a single file. Clone the repo, change your parameters, mine a genesis block, and you have a working chain.
+go-chain is a complete, Xcosh-parity blockchain node built from the ground up in Go. Every policy-level decision — proof-of-work algorithm, difficulty retargeting, coin identity, network parameters, and economics — lives behind a clean interface and can be swapped by editing a single file. Clone the repo, change your parameters, mine a genesis block, and you have a working chain.
 
-[Fairchain](DOCS/fairchain-fork.md) is the first production fork of go-chain, with a live testnet and GUI wallet.
+[Xcosh](DOCS/xcosh-fork.md) is the first production fork of go-chain, with a live testnet and GUI wallet.
 
 ## Modular Architecture
 
@@ -21,7 +21,7 @@ Four built-in algorithms behind a common `Hasher` interface. Set `Algorithm` in 
 
 | Algorithm | Value | Description |
 |-----------|-------|-------------|
-| DoubleSHA256 | `"sha256d"` | Bitcoin-compatible. ASIC-mineable. Fastest validation. |
+| DoubleSHA256 | `"sha256d"` | Xcosh-compatible. ASIC-mineable. Fastest validation. |
 | Argon2id | `"argon2id"` | CPU-fair, ASIC-resistant. RFC 9106. |
 | Scrypt | `"scrypt"` | Memory-hard (Litecoin-style). |
 | SHA256-Mem | `"sha256mem"` | Memory-hard SHA256. Designed for device fairness. |
@@ -32,7 +32,7 @@ Two algorithms behind a `Retargeter` interface. Set `DifficultyAlgorithm` in `co
 
 | Algorithm | Value | Description |
 |-----------|-------|-------------|
-| Bitcoin | `"bitcoin"` | Nakamoto-style epoch retarget with EDA. |
+| Xcosh | `"xcosh"` | Nakamoto-style epoch retarget with EDA. |
 | LWMA | `"lwma"` | Zawy12 LWMA-1. Per-block adjustment, responsive to hash rate swings. |
 
 ### Coin Parameters (`internal/coinparams/`)
@@ -50,8 +50,8 @@ make build
 ```
 
 Produces two binaries in `bin/`:
-- `fairchaind` — full node daemon (binary name is configurable via `coinparams.go`)
-- `fairchain-cli` — command-line RPC client
+- `xcoshd` — full node daemon (binary name is configurable via `coinparams.go`)
+- `xcosh-cli` — command-line RPC client
 
 Optional:
 ```bash
@@ -66,21 +66,21 @@ make adversary    # Adversarial block generator
 make run-regtest
 
 # Query node status
-fairchain-cli getblockchaininfo
-fairchain-cli getblockcount
-fairchain-cli getpeerinfo
+xcosh-cli getblockchaininfo
+xcosh-cli getblockcount
+xcosh-cli getpeerinfo
 ```
 
 See [Getting Started](DOCS/getting-started.md) for full setup instructions.
 
 ## GUI Wallet
 
-Fairchain includes a native desktop wallet built with Wails (Go + React). It provides a Bitcoin Core-style interface with sync overlay, debug console, peer management, and built-in CPU mining.
+Xcosh includes a native desktop wallet built with Wails (Go + React). It provides a Xcosh Core-style interface with sync overlay, debug console, peer management, and built-in CPU mining.
 
 ```bash
 ./configure --with-qt
 make build
-./bin/fairchain-qt
+./bin/xcosh-qt
 ```
 
 Requires Go, Node.js 20+, and WebKit2GTK (Linux). See `./configure --help` for details.
@@ -99,14 +99,14 @@ To join:
 # https://github.com/bams-repo/go-chain/releases/latest
 
 # Run a testnet node
-./fairchaind -network testnet -mine
+./xcoshd -network testnet -mine
 
 # Or build and run the GUI wallet (defaults to testnet)
 ./configure --with-qt && make build
-./bin/fairchain-qt
+./bin/xcosh-qt
 
 # Wallet: verbose node logging (debug window + stderr)
-FAIRCHAIN_DEBUG=1 ./bin/fairchain-qt
+XCOSH_DEBUG=1 ./bin/xcosh-qt
 ```
 
 ## What's Implemented
@@ -120,8 +120,8 @@ FAIRCHAIN_DEBUG=1 ./bin/fairchain-qt
 - **Mining**: Block template builder (BIP 22), fee-inclusive coinbase, P2PKH reward scripts
 - **P2P networking**: Version handshake, ping/pong keepalive, inventory gossip, block/tx propagation, initial block sync, peer address gossip, misbehavior scoring, IP banning, rate limiting, inbound eviction, exponential reconnection backoff
 - **Wire protocol**: Binary message encoding (version, verack, ping/pong, inv, getdata, block, tx, getblocks, addr)
-- **RPC API**: Bitcoin Core-compatible HTTP JSON-RPC (40+ endpoints, stratum pool compatible)
-- **CLI**: bitcoin-cli compatible command-line client
+- **RPC API**: Xcosh Core-compatible HTTP JSON-RPC (40+ endpoints, stratum pool compatible)
+- **CLI**: xcosh-cli compatible command-line client
 - **Storage**: LevelDB block index + flat file blocks (blk*.dat/rev*.dat) + LevelDB chainstate
 - **Wallet**: HD wallet (BIP39), encryption, backup, WIF import/export
 - **Tests**: 60+ unit tests + 9 fuzz targets + 16-phase chaos test
@@ -133,7 +133,7 @@ FAIRCHAIN_DEBUG=1 ./bin/fairchain-qt
 | [Getting Started](DOCS/getting-started.md) | Build, run, and configure a node |
 | [How to Fork](DOCS/how-to-fork.md) | Step-by-step guide to launching your own chain |
 | [RPC Commands](DOCS/rpc-commands.md) | Full API reference (40+ endpoints) |
-| [Fairchain Fork](DOCS/fairchain-fork.md) | Roadmap for the Fairchain production fork |
+| [Xcosh Fork](DOCS/xcosh-fork.md) | Roadmap for the Xcosh production fork |
 
 ## Project Structure
 

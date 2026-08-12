@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -15,11 +15,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
 )
 
 // TxEntry wraps a transaction with its computed metadata.
@@ -316,7 +316,7 @@ type BlockTemplateTx struct {
 }
 
 // BlockTemplateResult holds an atomic snapshot of mempool transactions and their
-// aggregate fees, suitable for block template construction. This mirrors Bitcoin
+// aggregate fees, suitable for block template construction. This mirrors Xcosh
 // Core's BlockAssembler which snapshots the mempool under a single lock.
 type BlockTemplateResult struct {
 	Transactions []*types.Transaction
@@ -450,7 +450,7 @@ func (m *Mempool) EvictLowestFeeRate() bool {
 }
 
 // ExpireOldTxs removes transactions that have been in the mempool longer than
-// the configured MempoolExpiry duration. Matches Bitcoin Core's CTxMemPool::Expire().
+// the configured MempoolExpiry duration. Matches Xcosh Core's CTxMemPool::Expire().
 // Returns the number of transactions expired.
 func (m *Mempool) ExpireOldTxs() int {
 	expiry := m.p.MempoolExpiry
@@ -485,7 +485,7 @@ func (m *Mempool) IsOutpointSpent(txHash types.Hash, index uint32) bool {
 
 // Persistence format marker. The legacy v0 format starts with a varint count
 // (first byte 0x00–0xFE for counts < 2^32). We use 0xFF as the v1 sentinel
-// because in Bitcoin's varint encoding 0xFF signals a 64-bit count, which
+// because in Xcosh's varint encoding 0xFF signals a 64-bit count, which
 // would imply > 4 billion transactions — impossible given MaxMempoolSize.
 // This makes version detection unambiguous.
 const mempoolDumpV1Marker byte = 0xFF
@@ -530,7 +530,7 @@ func (m *Mempool) DumpToBytes() []byte {
 
 // LoadFromBytes deserializes transactions from a mempool.dat dump and re-validates them.
 // Supports both v0 (legacy) and v1 (timestamped) formats. Transactions older than
-// MempoolExpiry are skipped on load, matching Bitcoin Core's LoadMempool behavior.
+// MempoolExpiry are skipped on load, matching Xcosh Core's LoadMempool behavior.
 // Returns the number of transactions successfully loaded.
 func (m *Mempool) LoadFromBytes(data []byte) int {
 	if len(data) == 0 {

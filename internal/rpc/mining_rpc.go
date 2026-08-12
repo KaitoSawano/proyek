@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -18,10 +18,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // longPollState tracks the current template identity for BIP 22 long polling.
@@ -413,7 +413,7 @@ func (s *Server) isValidMinDiffBits(block *types.Block, tipHeader *types.BlockHe
 }
 
 // handleLongPoll blocks until the template identified by longpollID has been
-// superseded, or a timeout of 30 seconds elapses. This matches Bitcoin Core's
+// superseded, or a timeout of 30 seconds elapses. This matches Xcosh Core's
 // long-poll behavior for BIP 22.
 func (s *Server) handleLongPoll(longpollID string) {
 	current := s.longPoll.currentID()
@@ -438,7 +438,7 @@ func (s *Server) NotifyBlockChange() {
 
 // rpcSubmitBlock accepts a hex-encoded serialized block (BIP 22 format).
 // Returns null on success, a BIP 22 rejection reason string on failure.
-// Missing-params returns rpcErrMisc (-1) matching Bitcoin Core convention;
+// Missing-params returns rpcErrMisc (-1) matching Xcosh Core convention;
 // pool software (miningcore, ckpool, etc.) probes this method with no args
 // and uses -1 to confirm the RPC exists.
 func (s *Server) rpcSubmitBlock(params []json.RawMessage) (interface{}, *jsonRPCError) {
@@ -536,7 +536,7 @@ func mapBlockErrorToRejection(errMsg string) string {
 	}
 }
 
-// rpcGetMiningInfo returns mining-related state matching Bitcoin Core's format.
+// rpcGetMiningInfo returns mining-related state matching Xcosh Core's format.
 func (s *Server) rpcGetMiningInfo(_ []json.RawMessage) (interface{}, *jsonRPCError) {
 	_, tipHeight := s.chain.Tip()
 	info := s.chain.GetChainInfo()

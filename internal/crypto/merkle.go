@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -7,11 +7,11 @@
 package crypto
 
 import (
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // MerkleRoot computes the merkle root of a list of transaction hashes.
-// Uses the Bitcoin-style algorithm: if the number of hashes at any level is odd,
+// Uses the Xcosh-style algorithm: if the number of hashes at any level is odd,
 // the last hash is duplicated. An empty list returns ZeroHash.
 //
 // Consensus-critical: the order of hashes must be deterministic (tx order in block).

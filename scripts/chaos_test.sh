@@ -3,7 +3,7 @@
 set -uo pipefail
 
 # ==========================================================================
-# FAIRCHAIN 12-NODE CHAOS + ADVERSARIAL + CONSENSUS STRESS TEST
+# XCOSH 12-NODE CHAOS + ADVERSARIAL + CONSENSUS STRESS TEST
 #
 # Architecture (mirrors real networks):
 #   Nodes 0,1   = SEED nodes (relay-only, no mining — network backbone)
@@ -156,12 +156,12 @@ if [ "$CHAOS_OS" = "windows" ]; then
     EXE_SUFFIX=".exe"
 fi
 
-BIN="${PROJROOT}/bin/fairchaind${EXE_SUFFIX}"
-ADV="${PROJROOT}/bin/fairchain-adversary${EXE_SUFFIX}"
+BIN="${PROJROOT}/bin/xcoshd${EXE_SUFFIX}"
+ADV="${PROJROOT}/bin/xcosh-adversary${EXE_SUFFIX}"
 
 if [ ! -x "$ADV" ] && [ ! -f "$ADV" ]; then
     echo "[chaos] adversary binary not found, building..."
-    (cd "$PROJROOT" && go build -o "bin/fairchain-adversary${EXE_SUFFIX}" ./cmd/adversary)
+    (cd "$PROJROOT" && go build -o "bin/xcosh-adversary${EXE_SUFFIX}" ./cmd/adversary)
 fi
 
 # Portable date: GNU date uses -Iseconds, macOS/BSD date uses -u +format.
@@ -182,10 +182,10 @@ portable_sleep() {
 kill_all_chaos_nodes() {
     case "$CHAOS_OS" in
         windows)
-            taskkill //F //IM "fairchaind${EXE_SUFFIX}" &>/dev/null || true
+            taskkill //F //IM "xcoshd${EXE_SUFFIX}" &>/dev/null || true
             ;;
         *)
-            pkill -9 -f "fairchaind.*chaos-runs" 2>/dev/null || true
+            pkill -9 -f "xcoshd.*chaos-runs" 2>/dev/null || true
             ;;
     esac
 }
@@ -856,7 +856,7 @@ run_check() { if ! "$@"; then ((FAILURES++)); fi; }
 
 echo ""
 echo "════════════════════════════════════════════════════════════════════"
-echo " FAIRCHAIN ${NUM_NODES}-NODE CHAOS + ADVERSARIAL + CONSENSUS STRESS TEST"
+echo " XCOSH ${NUM_NODES}-NODE CHAOS + ADVERSARIAL + CONSENSUS STRESS TEST"
 echo " ${NUM_SEEDS} Seeds + ${NUM_MINERS} Miners · 5s blocks · retarget/20"
 echo " Phases 0-9B: Chaos | 10-15: Adversarial | A-H: Consensus"
 echo " Phases I-M: UTXO Validation | 16: Final Verification"

@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/version"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/version"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/menu/keys"
@@ -87,7 +87,7 @@ func buildAppMenu(app *App) *menu.Menu {
 
 func networkForBuild() string {
 	// Explicit env var always wins — never ignore a testnet/regtest override.
-	if env := strings.TrimSpace(os.Getenv("FAIRCHAIN_NETWORK")); env != "" {
+	if env := strings.TrimSpace(os.Getenv("XCOSH_NETWORK")); env != "" {
 		return strings.ToLower(env)
 	}
 	if cliNetwork := networkFromArgs(os.Args[1:]); cliNetwork != "" {

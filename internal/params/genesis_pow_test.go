@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 package params
@@ -6,9 +6,9 @@ package params
 import (
 	"testing"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256mem"
-	"github.com/bams-repo/fairchain/internal/coinparams"
-	"github.com/bams-repo/fairchain/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
+	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/bams-repo/xcosh/internal/crypto"
 )
 
 func TestMainnetGenesisPoW(t *testing.T) {

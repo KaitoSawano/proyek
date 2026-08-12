@@ -1,9 +1,9 @@
 <!-- Branding values sourced from internal/coinparams/coinparams.go -->
 # RPC Commands
 
-go-chain exposes an HTTP JSON API compatible with Bitcoin Core's RPC interface. Endpoints return JSON responses. State-changing endpoints (sending, signing, encryption, shutdown) require POST requests; read-only endpoints accept GET.
+go-chain exposes an HTTP JSON API compatible with Xcosh Core's RPC interface. Endpoints return JSON responses. State-changing endpoints (sending, signing, encryption, shutdown) require POST requests; read-only endpoints accept GET.
 
-go-chain also supports **Bitcoin Core JSON-RPC 1.0 dispatch** at `POST /`, enabling direct compatibility with stratum mining pool software (ckpool, Braiins Pool, etc.) and any tool that speaks Bitcoin's JSON-RPC protocol. See [JSON-RPC 1.0 Dispatch](#json-rpc-10-dispatch-stratum-pool-compatibility) for details.
+go-chain also supports **Xcosh Core JSON-RPC 1.0 dispatch** at `POST /`, enabling direct compatibility with stratum mining pool software (ckpool, Braiins Pool, etc.) and any tool that speaks Xcosh's JSON-RPC protocol. See [JSON-RPC 1.0 Dispatch](#json-rpc-10-dispatch-stratum-pool-compatibility) for details.
 
 ## Command Index
 
@@ -107,10 +107,10 @@ go-chain also supports **Bitcoin Core JSON-RPC 1.0 dispatch** at `POST /`, enabl
 
 ## Using the CLI
 
-The `fairchain-cli` tool is the primary way to interact with a running node:
+The `xcosh-cli` tool is the primary way to interact with a running node:
 
 ```bash
-fairchain-cli [options] <command> [params]
+xcosh-cli [options] <command> [params]
 ```
 
 ### CLI Options
@@ -125,13 +125,13 @@ fairchain-cli [options] <command> [params]
 
 ```bash
 # Local node (default)
-fairchain-cli getblockchaininfo
+xcosh-cli getblockchaininfo
 
 # Remote node
-fairchain-cli -rpcconnect=45.32.196.26 -rpcport=19335 getblockchaininfo
+xcosh-cli -rpcconnect=45.32.196.26 -rpcport=19335 getblockchaininfo
 
 # Different local port
-fairchain-cli -rpcport=19447 getblockcount
+xcosh-cli -rpcport=19447 getblockcount
 ```
 
 ## Using curl
@@ -146,7 +146,7 @@ curl -s http://127.0.0.1:19445/getblockchaininfo | python3 -m json.tool
 curl -s -u myuser:mypassword http://127.0.0.1:19445/getblockchaininfo
 
 # With cookie auth
-curl -s -u "$(cat ~/.fairchain/.cookie)" http://127.0.0.1:19445/getblockchaininfo
+curl -s -u "$(cat ~/.xcosh/.cookie)" http://127.0.0.1:19445/getblockchaininfo
 
 # Query with parameters (GET)
 curl -s "http://127.0.0.1:19445/getblockhash?height=100"
@@ -167,7 +167,7 @@ curl -s -X POST --data-binary @block.bin http://127.0.0.1:19445/submitblock
 Returns the current state of the blockchain.
 
 ```bash
-fairchain-cli getblockchaininfo
+xcosh-cli getblockchaininfo
 ```
 
 **Response fields:**
@@ -213,7 +213,7 @@ fairchain-cli getblockchaininfo
 Returns the height of the most-work fully-validated chain.
 
 ```bash
-fairchain-cli getblockcount
+xcosh-cli getblockcount
 ```
 
 **Response:** integer — the current block height.
@@ -229,7 +229,7 @@ fairchain-cli getblockcount
 Returns the hash of the best (tip) block.
 
 ```bash
-fairchain-cli getbestblockhash
+xcosh-cli getbestblockhash
 ```
 
 **Response:** string — block hash in display order (hex).
@@ -245,7 +245,7 @@ fairchain-cli getbestblockhash
 Returns the block hash at a given height.
 
 ```bash
-fairchain-cli getblockhash <height>
+xcosh-cli getblockhash <height>
 ```
 
 | Parameter | Type | Required | Description |
@@ -267,7 +267,7 @@ curl -s "http://127.0.0.1:19445/getblockhash?height=100"
 Returns detailed information about a block by its hash.
 
 ```bash
-fairchain-cli getblock <hash>
+xcosh-cli getblock <hash>
 ```
 
 | Parameter | Type | Required | Description |
@@ -300,10 +300,10 @@ curl -s "http://127.0.0.1:19445/getblock?hash=000000034a1b..."
 
 ### getblockbyheight
 
-Returns detailed information about a block by its height. This is a convenience endpoint not present in Bitcoin Core.
+Returns detailed information about a block by its height. This is a convenience endpoint not present in Xcosh Core.
 
 ```bash
-fairchain-cli getblockbyheight <height>
+xcosh-cli getblockbyheight <height>
 ```
 
 | Parameter | Type | Required | Description |
@@ -325,7 +325,7 @@ curl -s "http://127.0.0.1:19445/getblockbyheight?height=100"
 Returns the current proof-of-work difficulty as a multiple of the minimum difficulty.
 
 ```bash
-fairchain-cli getdifficulty
+xcosh-cli getdifficulty
 ```
 
 **Response:** number — difficulty value.
@@ -343,7 +343,7 @@ fairchain-cli getdifficulty
 Returns information about the node's network state.
 
 ```bash
-fairchain-cli getnetworkinfo
+xcosh-cli getnetworkinfo
 ```
 
 **Response fields:**
@@ -351,7 +351,7 @@ fairchain-cli getnetworkinfo
 | Field | Type | Description |
 |-------|------|-------------|
 | `version` | number | Protocol version |
-| `subversion` | string | User agent string (e.g., `/fairchain:0.3.0/`) |
+| `subversion` | string | User agent string (e.g., `/xcosh:0.3.0/`) |
 | `protocolversion` | number | Protocol version |
 | `connections` | number | Total peer connections |
 | `connections_in` | number | Inbound connections |
@@ -364,10 +364,10 @@ fairchain-cli getnetworkinfo
 
 ### getpeerinfo
 
-Returns detailed information about each connected peer. Response format matches Bitcoin Core's `getpeerinfo`.
+Returns detailed information about each connected peer. Response format matches Xcosh Core's `getpeerinfo`.
 
 ```bash
-fairchain-cli getpeerinfo
+xcosh-cli getpeerinfo
 ```
 
 **Response:** array of peer objects:
@@ -421,7 +421,7 @@ fairchain-cli getpeerinfo
     "pingtime": 0.045,
     "minping": 0.032,
     "version": 1,
-    "subver": "/fairchain:0.4.0/",
+    "subver": "/xcosh:0.4.0/",
     "inbound": false,
     "startingheight": 1500,
     "synced_headers": 1542,
@@ -439,7 +439,7 @@ fairchain-cli getpeerinfo
 Returns the total number of connected peers.
 
 ```bash
-fairchain-cli getconnectioncount
+xcosh-cli getconnectioncount
 ```
 
 **Response:** integer — peer count.
@@ -455,7 +455,7 @@ fairchain-cli getconnectioncount
 Attempts to connect to a new peer.
 
 ```bash
-fairchain-cli addnode <ip:port>
+xcosh-cli addnode <ip:port>
 ```
 
 | Parameter | Type | Required | Description |
@@ -483,7 +483,7 @@ curl -s "http://127.0.0.1:19445/addnode?node=192.168.1.100:19334"
 Disconnects from a connected peer.
 
 ```bash
-fairchain-cli disconnectnode <address>
+xcosh-cli disconnectnode <address>
 ```
 
 | Parameter | Type | Required | Description |
@@ -513,7 +513,7 @@ curl -s "http://127.0.0.1:19445/disconnectnode?address=192.168.1.100:19334"
 Returns the current state of the transaction mempool.
 
 ```bash
-fairchain-cli getmempoolinfo
+xcosh-cli getmempoolinfo
 ```
 
 **Response fields:**
@@ -531,10 +531,10 @@ Returns all transaction IDs in the mempool.
 
 ```bash
 # Compact (txid list only)
-fairchain-cli getrawmempool
+xcosh-cli getrawmempool
 
 # Verbose (includes fee info)
-fairchain-cli getrawmempool true
+xcosh-cli getrawmempool true
 ```
 
 | Parameter | Type | Required | Description |
@@ -575,7 +575,7 @@ curl -s "http://127.0.0.1:19445/getrawmempool?verbose=true"
 Returns mempool data for a specific transaction.
 
 ```bash
-fairchain-cli getmempoolentry <txid>
+xcosh-cli getmempoolentry <txid>
 ```
 
 | Parameter | Type | Required | Description |
@@ -606,7 +606,7 @@ curl -s "http://127.0.0.1:19445/getmempoolentry?txid=abc123..."
 Returns information about an unspent transaction output.
 
 ```bash
-fairchain-cli gettxout <txid> <n>
+xcosh-cli gettxout <txid> <n>
 ```
 
 | Parameter | Type | Required | Description |
@@ -639,7 +639,7 @@ Returns `null` if the output doesn't exist or has been spent.
 Returns statistics about the entire unspent transaction output set.
 
 ```bash
-fairchain-cli gettxoutsetinfo
+xcosh-cli gettxoutsetinfo
 ```
 
 **Response fields:**
@@ -668,7 +668,7 @@ fairchain-cli gettxoutsetinfo
 
 ### JSON-RPC 1.0 Dispatch (Stratum Pool Compatibility)
 
-go-chain supports Bitcoin Core's JSON-RPC 1.0 dispatch at `POST /`. This enables any standard stratum pool server (ckpool, Braiins Pool, etc.) to communicate with go-chain using the same protocol they use for Bitcoin Core.
+go-chain supports Xcosh Core's JSON-RPC 1.0 dispatch at `POST /`. This enables any standard stratum pool server (ckpool, Braiins Pool, etc.) to communicate with go-chain using the same protocol they use for Xcosh Core.
 
 **Format:**
 
@@ -717,7 +717,7 @@ Returns data needed to construct a block for mining. Implements BIP 22/23.
 **REST:**
 
 ```bash
-fairchain-cli getblocktemplate
+xcosh-cli getblocktemplate
 ```
 
 **JSON-RPC:**
@@ -778,7 +778,7 @@ curl -s -X POST -d '<hex_block_data>' http://127.0.0.1:19445/submitblock
 curl -s -X POST --data-binary @block.bin http://127.0.0.1:19445/submitblock
 ```
 
-**JSON-RPC (Bitcoin Core compatible):**
+**JSON-RPC (Xcosh Core compatible):**
 
 ```bash
 curl --user __cookie__:<pass> \
@@ -796,7 +796,7 @@ curl --user __cookie__:<pass> \
 }
 ```
 
-**JSON-RPC Response:** Returns `null` on success. Returns a string reason on failure (e.g. `"high-hash"`, `"bad-prevblk"`). This matches Bitcoin Core's BIP 22 behavior.
+**JSON-RPC Response:** Returns `null` on success. Returns a string reason on failure (e.g. `"high-hash"`, `"bad-prevblk"`). This matches Xcosh Core's BIP 22 behavior.
 
 ---
 
@@ -807,7 +807,7 @@ Returns mining-related information.
 **REST:**
 
 ```bash
-fairchain-cli getmininginfo
+xcosh-cli getmininginfo
 ```
 
 **JSON-RPC:**
@@ -838,9 +838,9 @@ Returns the estimated network hashes per second based on the last N blocks.
 **REST:**
 
 ```bash
-fairchain-cli getnetworkhashps
-fairchain-cli getnetworkhashps 120
-fairchain-cli getnetworkhashps 120 5000
+xcosh-cli getnetworkhashps
+xcosh-cli getnetworkhashps 120
+xcosh-cli getnetworkhashps 120 5000
 ```
 
 **JSON-RPC:**
@@ -885,8 +885,8 @@ Returns the raw transaction data as a hex string. Checks the mempool first, then
 **REST:**
 
 ```bash
-fairchain-cli getrawtransaction <txid>
-fairchain-cli getrawtransaction <txid> true
+xcosh-cli getrawtransaction <txid>
+xcosh-cli getrawtransaction <txid> true
 ```
 
 **JSON-RPC:**
@@ -931,7 +931,7 @@ curl --user __cookie__:<pass> \
 Returns a summary overview of the node.
 
 ```bash
-fairchain-cli getinfo
+xcosh-cli getinfo
 ```
 
 **Response fields:**
@@ -958,13 +958,13 @@ Initiates a graceful shutdown of the daemon. Requires POST.
 curl -s -X POST http://127.0.0.1:19445/stop
 
 # Via CLI (sends GET — use curl for proper POST)
-fairchain-cli stop
+xcosh-cli stop
 ```
 
 **Response:**
 
 ```
-"Fairchain server stopping"
+"Xcosh server stopping"
 ```
 
 ---
@@ -974,7 +974,7 @@ fairchain-cli stop
 Displays available commands (CLI only, not an RPC endpoint).
 
 ```bash
-fairchain-cli help
+xcosh-cli help
 ```
 
 ---
@@ -986,7 +986,7 @@ fairchain-cli help
 Generates a new receiving address from the HD wallet keypool.
 
 ```bash
-fairchain-cli getnewaddress
+xcosh-cli getnewaddress
 ```
 
 **Response:** string — new Base58Check address.
@@ -998,7 +998,7 @@ fairchain-cli getnewaddress
 Returns the wallet's confirmed balance.
 
 ```bash
-fairchain-cli getbalance [minconf]
+xcosh-cli getbalance [minconf]
 ```
 
 | Parameter | Type | Required | Description |
@@ -1019,7 +1019,7 @@ fairchain-cli getbalance [minconf]
 Returns all unspent transaction outputs belonging to the wallet.
 
 ```bash
-fairchain-cli listunspent [minconf] [maxconf]
+xcosh-cli listunspent [minconf] [maxconf]
 ```
 
 | Parameter | Type | Required | Description |
@@ -1051,7 +1051,7 @@ Sends coins to the specified address. Automatically selects UTXOs, calculates fe
 curl -s -X POST "http://127.0.0.1:19445/sendtoaddress?address=<addr>&amount=<amount>"
 
 # Via CLI
-fairchain-cli sendtoaddress <address> <amount>
+xcosh-cli sendtoaddress <address> <amount>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1068,7 +1068,7 @@ fairchain-cli sendtoaddress <address> <amount>
 Returns recent wallet transactions (UTXOs belonging to the wallet).
 
 ```bash
-fairchain-cli listtransactions [count]
+xcosh-cli listtransactions [count]
 ```
 
 | Parameter | Type | Required | Description |
@@ -1095,7 +1095,7 @@ fairchain-cli listtransactions [count]
 Returns wallet status information.
 
 ```bash
-fairchain-cli getwalletinfo
+xcosh-cli getwalletinfo
 ```
 
 **Response fields:**
@@ -1121,7 +1121,7 @@ fairchain-cli getwalletinfo
 Returns the private key for an address in WIF (Wallet Import Format).
 
 ```bash
-fairchain-cli dumpprivkey <address>
+xcosh-cli dumpprivkey <address>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1141,7 +1141,7 @@ Imports a private key into the wallet. Accepts WIF format (preferred) or raw hex
 curl -s -X POST "http://127.0.0.1:19445/importprivkey?privkey=<key>"
 
 # Via CLI
-fairchain-cli importprivkey <key>
+xcosh-cli importprivkey <key>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1163,7 +1163,7 @@ fairchain-cli importprivkey <key>
 Returns information about a given address.
 
 ```bash
-fairchain-cli validateaddress <address>
+xcosh-cli validateaddress <address>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1189,7 +1189,7 @@ fairchain-cli validateaddress <address>
 Generates a new change address from the HD wallet.
 
 ```bash
-fairchain-cli getrawchangeaddress
+xcosh-cli getrawchangeaddress
 ```
 
 **Response:** string — new change address.
@@ -1205,7 +1205,7 @@ Sets the transaction fee rate (per byte) for wallet transactions. Requires POST.
 curl -s -X POST "http://127.0.0.1:19445/settxfee?amount=<amount>"
 
 # Via CLI
-fairchain-cli settxfee <amount>
+xcosh-cli settxfee <amount>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1225,7 +1225,7 @@ Submits a serialized transaction to the mempool and broadcasts it to the network
 curl -s -X POST "http://127.0.0.1:19445/sendrawtransaction?hexstring=<hex>"
 
 # Via CLI
-fairchain-cli sendrawtransaction <hexstring>
+xcosh-cli sendrawtransaction <hexstring>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1245,7 +1245,7 @@ Signs a raw transaction using wallet keys. Signs all inputs that correspond to w
 curl -s -X POST "http://127.0.0.1:19445/signrawtransactionwithwallet?hexstring=<hex>"
 
 # Via CLI
-fairchain-cli signrawtransactionwithwallet <hexstring>
+xcosh-cli signrawtransactionwithwallet <hexstring>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1266,7 +1266,7 @@ fairchain-cli signrawtransactionwithwallet <hexstring>
 Returns the total amount received by an address (sum of all UTXOs paying to it).
 
 ```bash
-fairchain-cli getreceivedbyaddress <address> [minconf]
+xcosh-cli getreceivedbyaddress <address> [minconf]
 ```
 
 | Parameter | Type | Required | Description |
@@ -1288,7 +1288,7 @@ fairchain-cli getreceivedbyaddress <address> [minconf]
 Returns all addresses in the wallet grouped with their balances.
 
 ```bash
-fairchain-cli listaddressgroupings
+xcosh-cli listaddressgroupings
 ```
 
 **Response:** array of address groupings, each containing [address, balance, balance_fair].
@@ -1304,7 +1304,7 @@ Creates a backup copy of the wallet file. The destination must be a relative pat
 curl -s -X POST "http://127.0.0.1:19445/backupwallet?destination=wallet-backup.dat"
 
 # Via CLI
-fairchain-cli backupwallet <destination>
+xcosh-cli backupwallet <destination>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1320,7 +1320,7 @@ fairchain-cli backupwallet <destination>
 Returns all addresses associated with the wallet.
 
 ```bash
-fairchain-cli getaddressesbylabel
+xcosh-cli getaddressesbylabel
 ```
 
 **Response:** object keyed by address with purpose information.
@@ -1332,7 +1332,7 @@ fairchain-cli getaddressesbylabel
 Returns the wallet mnemonic phrase and all derived addresses. Wallet must be unlocked if encrypted.
 
 ```bash
-fairchain-cli dumpwallet
+xcosh-cli dumpwallet
 ```
 
 **Response fields:**
@@ -1350,7 +1350,7 @@ fairchain-cli dumpwallet
 Get details about a transaction by txid. Checks mempool first, then scans the UTXO set. Without a full transaction index, only transactions with unspent outputs are visible on-chain.
 
 ```bash
-fairchain-cli gettransaction <txid>
+xcosh-cli gettransaction <txid>
 ```
 
 | Parameter | Type | Required | Description |
@@ -1387,7 +1387,7 @@ Encrypts the wallet with a passphrase. After encryption, the wallet is locked an
 curl -s -X POST "http://127.0.0.1:19445/encryptwallet?passphrase=my+secure+passphrase"
 
 # Via CLI
-fairchain-cli encryptwallet "my secure passphrase"
+xcosh-cli encryptwallet "my secure passphrase"
 ```
 
 | Parameter | Type | Required | Description |
@@ -1411,7 +1411,7 @@ Unlocks an encrypted wallet for the specified duration (in seconds). Required be
 curl -s -X POST "http://127.0.0.1:19445/walletpassphrase?passphrase=my+secure+passphrase&timeout=300"
 
 # Via CLI
-fairchain-cli walletpassphrase "my secure passphrase" 300
+xcosh-cli walletpassphrase "my secure passphrase" 300
 ```
 
 | Parameter | Type | Required | Description |
@@ -1428,7 +1428,7 @@ fairchain-cli walletpassphrase "my secure passphrase" 300
 Immediately locks the wallet, clearing the decryption key from memory.
 
 ```bash
-fairchain-cli walletlock
+xcosh-cli walletlock
 ```
 
 **Response:** `true` on success.
@@ -1437,14 +1437,14 @@ fairchain-cli walletlock
 
 ## go-chain Extension Commands
 
-These endpoints are not part of Bitcoin Core's RPC interface.
+These endpoints are not part of Xcosh Core's RPC interface.
 
 ### getchainstatus
 
 Returns chain status including difficulty retarget information.
 
 ```bash
-fairchain-cli getchainstatus
+xcosh-cli getchainstatus
 ```
 
 **Response fields:**
@@ -1482,7 +1482,7 @@ fairchain-cli getchainstatus
 Returns internal performance metrics.
 
 ```bash
-fairchain-cli metrics
+xcosh-cli metrics
 ```
 
 **Response:** JSON object with counters for blocks mined, blocks received, transactions processed, and other internal metrics.

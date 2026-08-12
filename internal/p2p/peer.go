@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -18,8 +18,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/protocol"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/protocol"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // Peer represents a connected remote node.
@@ -37,7 +37,7 @@ type Peer struct {
 	mu      sync.Mutex
 	version *protocol.VersionMsg
 
-	// Liveness tracking (Bitcoin Core parity: BIP 31 ping/pong).
+	// Liveness tracking (Xcosh Core parity: BIP 31 ping/pong).
 	connectedAt    time.Time
 	lastRecv       atomic.Int64 // unix timestamp of last message received
 	lastSend       atomic.Int64 // unix timestamp of last message sent
@@ -47,7 +47,7 @@ type Peer struct {
 	pingLatency    time.Duration
 	minPingLatency time.Duration // best observed ping
 
-	// Block/tx relay timestamps (Bitcoin Core parity).
+	// Block/tx relay timestamps (Xcosh Core parity).
 	lastBlockTime atomic.Int64 // unix timestamp of last valid block received from this peer
 	lastTxTime    atomic.Int64 // unix timestamp of last valid tx received from this peer
 
@@ -59,13 +59,13 @@ type Peer struct {
 	prefersHeaders int32 // atomic: 1 = peer sent sendheaders
 
 	// Headers-per-window DoS tracking: sliding window counter that resets
-	// every headerWindowDuration. Bitcoin Core only limits per-message count
+	// every headerWindowDuration. Xcosh Core only limits per-message count
 	// (MaxHeadersPerMsg); this provides additional protection against peers
 	// that send an unreasonable volume of unsolicited header messages.
 	headersReceived int32     // headers received in current window
 	headerWindowStart time.Time // start of current sliding window
 
-	// Bitcoin Core parity (ConsiderEviction): highest header height this peer
+	// Xcosh Core parity (ConsiderEviction): highest header height this peer
 	// has actually proven by delivering valid headers. Distinct from BestHeight
 	// which is the self-reported version message height.
 	provenHeaderHeight atomic.Uint32
@@ -75,14 +75,14 @@ type Peer struct {
 	chainSyncDeadline time.Time
 	chainSyncWarned   bool
 
-	// Misbehavior scoring (Bitcoin Core parity: ban at 100).
+	// Misbehavior scoring (Xcosh Core parity: ban at 100).
 	banScore int32 // atomic-style but guarded by mu for compound ops
 
 	// Rate limiting: sliding window message counter.
 	msgCount   int32     // messages received in current window
 	windowStart time.Time // start of current rate-limit window
 
-	// Address gossip: Bitcoin Core only responds to one getaddr per connection.
+	// Address gossip: Xcosh Core only responds to one getaddr per connection.
 	getaddrResponded bool
 
 	// Per-peer getheaders throttle: max 1 response per 2 seconds.
@@ -112,9 +112,9 @@ const (
 	readTimeout       = 5 * time.Minute
 	writeTimeout      = 30 * time.Second
 
-	// Bitcoin Core parity: ping every 2 minutes.
+	// Xcosh Core parity: ping every 2 minutes.
 	PingInterval = 2 * time.Minute
-	// Bitcoin Core parity: disconnect if no pong within 20 minutes.
+	// Xcosh Core parity: disconnect if no pong within 20 minutes.
 	PongTimeout = 20 * time.Minute
 
 	// Misbehavior threshold — peer is banned when score reaches this.
@@ -267,7 +267,7 @@ func (p *Peer) HandlePong(nonce uint64) bool {
 }
 
 // PongOverdue returns true if a ping is outstanding and the pong timeout
-// has elapsed — matching Bitcoin Core's 20-minute pong deadline.
+// has elapsed — matching Xcosh Core's 20-minute pong deadline.
 func (p *Peer) PongOverdue() bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -552,10 +552,10 @@ func (p *Peer) Close() {
 
 func (p *Peer) Done() <-chan struct{} { return p.done }
 
-// --- Info snapshot for RPC (Bitcoin Core parity) ---
+// --- Info snapshot for RPC (Xcosh Core parity) ---
 
-// PeerInfo mirrors Bitcoin Core's getpeerinfo response fields.
-// JSON keys match Bitcoin Core exactly for tooling compatibility.
+// PeerInfo mirrors Xcosh Core's getpeerinfo response fields.
+// JSON keys match Xcosh Core exactly for tooling compatibility.
 type PeerInfo struct {
 	ID              int32   `json:"id"`
 	Addr            string  `json:"addr"`

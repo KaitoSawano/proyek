@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -60,7 +60,7 @@ func (tx *Transaction) IsCoinbase() bool {
 
 // ---- Canonical Serialization ----
 // All consensus-critical encoding uses explicit little-endian binary format.
-// Variable-length fields are prefixed with a varint (Bitcoin-style compact size).
+// Variable-length fields are prefixed with a varint (Xcosh-style compact size).
 
 // WriteVarInt writes a variable-length integer to w.
 func WriteVarInt(w io.Writer, val uint64) error {

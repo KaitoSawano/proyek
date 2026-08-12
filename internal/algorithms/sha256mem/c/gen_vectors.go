@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license.
 
 // gen_vectors generates 1000 sha256mem test vectors as hex pairs (input, expected_output).
@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256mem"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
 )
 
 func main() {

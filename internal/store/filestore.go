@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,8 +10,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 )
 
@@ -221,7 +221,7 @@ func (fs *FileStore) ForEachUtxo(fn func(txHash types.Hash, index uint32, data [
 
 // GetBlock retrieves a full block by hash using the index + flat files.
 // After deserialization, the header hash is recomputed and compared against
-// the expected hash to detect flat-file corruption (similar to Bitcoin Core).
+// the expected hash to detect flat-file corruption (similar to Xcosh Core).
 func (fs *FileStore) GetBlock(hash types.Hash) (*types.Block, error) {
 	rec, err := fs.index.GetBlockIndex(hash)
 	if err != nil {

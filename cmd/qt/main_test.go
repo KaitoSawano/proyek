@@ -11,8 +11,8 @@ func TestNetworkFromArgs(t *testing.T) {
 		{name: "network separate value", args: []string{"-network", "testnet"}, want: "testnet"},
 		{name: "network equals value", args: []string{"-network=testnet"}, want: "testnet"},
 		{name: "double dash network", args: []string{"--network=regtest"}, want: "regtest"},
-		{name: "bitcoin style testnet", args: []string{"-testnet"}, want: "testnet"},
-		{name: "bitcoin style mainnet", args: []string{"--mainnet"}, want: "mainnet"},
+		{name: "xcosh style testnet", args: []string{"-testnet"}, want: "testnet"},
+		{name: "xcosh style mainnet", args: []string{"--mainnet"}, want: "mainnet"},
 		{name: "none", args: []string{"-debug"}, want: ""},
 	}
 

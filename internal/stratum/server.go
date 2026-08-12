@@ -1,4 +1,4 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
+// Copyright (c) 2024-2026 The Xcosh Contributors
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,14 +20,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms"
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 const (
@@ -1274,7 +1274,7 @@ func computeMerkleBranch(txs []types.Transaction) []types.Hash {
 				copy(combined[32:], hashes[i+1][:])
 				next = append(next, crypto.DoubleSHA256(combined))
 			} else {
-				// Odd element — duplicate the last hash (Bitcoin merkle tree rule)
+				// Odd element — duplicate the last hash (Xcosh merkle tree rule)
 				combined := make([]byte, 64)
 				copy(combined[:32], hashes[i][:])
 				copy(combined[32:], hashes[i][:])
@@ -1332,7 +1332,7 @@ func computeMerkleRootFromBranch(coinbaseHash types.Hash, branch []types.Hash) t
 }
 
 // stratumPrevhashHex encodes a hash for the stratum prevhash field.
-// Bitcoin stratum convention: each 4-byte group is byte-swapped from the
+// Xcosh stratum convention: each 4-byte group is byte-swapped from the
 // internal LE representation so that cpuminer's le32dec + bswap32 pipeline
 // reconstructs the original LE bytes for hashing.
 func stratumPrevhashHex(h types.Hash) string {
@@ -1371,7 +1371,7 @@ func decodeUint32LE(s string) (uint32, error) {
 }
 
 // targetToDifficulty converts a 256-bit LE target hash to a stratum difficulty value.
-// Uses the Bitcoin diff1 constant: target = diff1 / difficulty.
+// Uses the Xcosh diff1 constant: target = diff1 / difficulty.
 func targetToDifficulty(target types.Hash) float64 {
 	var be [32]byte
 	for i := 0; i < 32; i++ {
@@ -1389,7 +1389,7 @@ func targetToDifficulty(target types.Hash) float64 {
 }
 
 // difficultyToTarget converts standard Stratum difficulty to an internal-order
-// hash target using Bitcoin's diff1 target: target = diff1 / difficulty.
+// hash target using Xcosh's diff1 target: target = diff1 / difficulty.
 func difficultyToTarget(diff float64) types.Hash {
 	if diff <= 0 {
 		diff = 1

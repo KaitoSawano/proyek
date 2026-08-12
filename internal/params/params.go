@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -9,7 +9,7 @@ package params
 import (
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // ChainParams defines the complete set of parameters for a blockchain network.
@@ -37,7 +37,7 @@ type ChainParams struct {
 	InitialBits              uint32 // Compact target for the genesis block and initial difficulty.
 	MinBits                  uint32 // Minimum difficulty (maximum target) allowed.
 	NoRetarget               bool   // If true, difficulty never changes (regtest mode).
-	AllowMinDifficultyBlocks bool          // Bitcoin testnet rule: reset to MinBits after a long gap.
+	AllowMinDifficultyBlocks bool          // Xcosh testnet rule: reset to MinBits after a long gap.
 	MinDifficultyGap         time.Duration // Timestamp gap that triggers min-diff. 0 = 2*TargetBlockSpacing.
 
 	// Block limits
@@ -66,7 +66,7 @@ type ChainParams struct {
 	MaxMempoolSize      uint32        // Maximum number of transactions in mempool.
 	MinRelayTxFee       uint64        // Minimum absolute fee for mempool admission (smallest units).
 	MinRelayTxFeeRate   uint64        // Minimum fee rate (sat/byte) for mempool admission.
-	MempoolExpiry       time.Duration // Maximum age before a mempool transaction is expired. Bitcoin Core default: 336h (2 weeks).
+	MempoolExpiry       time.Duration // Maximum age before a mempool transaction is expired. Xcosh Core default: 336h (2 weeks).
 
 	// Seed nodes
 	SeedNodes []string // DNS seeds or static IP:port addresses for peer discovery.

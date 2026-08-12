@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -13,7 +13,7 @@ import (
 )
 
 // MaxAllowedOffset is the maximum median offset we'll apply (70 minutes),
-// matching Bitcoin Core's behavior. If the median exceeds this, we log a
+// matching Xcosh Core's behavior. If the median exceeds this, we log a
 // warning but refuse to adjust — the local clock is assumed broken.
 const MaxAllowedOffset = 70 * time.Minute
 
@@ -21,10 +21,10 @@ const MaxAllowedOffset = 70 * time.Minute
 // is used. Until this threshold is reached, the offset is zero (local clock).
 const MinSamples = 5
 
-// MaxSamples caps the number of peer offsets retained. Bitcoin Core uses 200.
+// MaxSamples caps the number of peer offsets retained. Xcosh Core uses 200.
 const MaxSamples = 200
 
-// AdjustedClock provides network-adjusted time, modeled after Bitcoin Core's
+// AdjustedClock provides network-adjusted time, modeled after Xcosh Core's
 // CTimeData / GetAdjustedTime(). Peer timestamps from version messages are
 // compared against local time to compute offsets. The median offset is applied
 // to all subsequent time queries once enough samples are collected.
@@ -37,7 +37,7 @@ type AdjustedClock struct {
 }
 
 // New creates a new AdjustedClock with the local node's own zero offset
-// pre-seeded (Bitcoin Core seeds offset 0 for the local node).
+// pre-seeded (Xcosh Core seeds offset 0 for the local node).
 func New() *AdjustedClock {
 	return &AdjustedClock{
 		offsets: []int64{0},

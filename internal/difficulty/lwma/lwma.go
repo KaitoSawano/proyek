@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,14 +10,14 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // Retargeter implements zawy12's LWMA-1 (Linearly Weighted Moving Average)
-// difficulty adjustment algorithm. Unlike Bitcoin's epoch-based retarget,
+// difficulty adjustment algorithm. Unlike Xcosh's epoch-based retarget,
 // LWMA adjusts difficulty every block using a weighted moving average of
 // recent solve times, giving higher weight to more recent blocks.
 //
@@ -95,7 +95,7 @@ func (r *Retargeter) CalcNextBits(tip *types.BlockHeader, tipHeight uint32, getA
 	// single min-diff block injects a target orders of magnitude above the
 	// real difficulty, inflating sumTarget and making subsequent blocks far
 	// too easy. We substitute the last real (non-min-diff) block's bits for
-	// any min-diff block in the window — matching Bitcoin Core's scan-back
+	// any min-diff block in the window — matching Xcosh Core's scan-back
 	// approach adapted for per-block retargeting.
 	isMinDiff := p.AllowMinDifficultyBlocks && p.MinBits != 0
 	var lastRealBits uint32

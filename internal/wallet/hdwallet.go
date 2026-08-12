@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -19,8 +19,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/types"
 	"github.com/btcsuite/btcd/btcutil/hdkeychain"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
@@ -33,7 +33,7 @@ import (
 // Change chain:   m/44'/0'/0'/1/i
 const (
 	bip44Purpose  = 44
-	bip44CoinType = 0 // Bitcoin-compatible
+	bip44CoinType = 0 // Xcosh-compatible
 )
 
 // WalletData is the on-disk JSON representation of the wallet.
@@ -100,7 +100,7 @@ type HDWallet struct {
 
 	addrVersion byte // 0x00 mainnet, 0x6F testnet/regtest
 
-	// Encryption state (matches Bitcoin Core's wallet lock model).
+	// Encryption state (matches Xcosh Core's wallet lock model).
 	encrypted   bool
 	locked      bool
 	unlockUntil time.Time
@@ -647,7 +647,7 @@ func (w *HDWallet) ExternalAddresses() []string {
 }
 
 // DumpPrivKey returns the WIF-encoded private key for a given address.
-// This matches Bitcoin Core's dumpprivkey behavior.
+// This matches Xcosh Core's dumpprivkey behavior.
 // Requires the wallet to be unlocked if encrypted.
 func (w *HDWallet) DumpPrivKey(address string) (string, error) {
 	if err := w.RequireUnlocked(); err != nil {
@@ -663,11 +663,11 @@ func (w *HDWallet) DumpPrivKey(address string) (string, error) {
 }
 
 // ImportPrivKey imports a private key in WIF format (or raw hex for backward compatibility)
-// and registers it as an external key. Matches Bitcoin Core's importprivkey behavior.
+// and registers it as an external key. Matches Xcosh Core's importprivkey behavior.
 func (w *HDWallet) ImportPrivKey(privKeyStr string) (string, error) {
 	var privBytes []byte
 
-	// Try WIF first (Bitcoin Core standard), then fall back to raw hex.
+	// Try WIF first (Xcosh Core standard), then fall back to raw hex.
 	wifKey, _, _, wifErr := crypto.DecodeWIF(privKeyStr)
 	if wifErr == nil {
 		privBytes = wifKey
@@ -961,7 +961,7 @@ func (w *HDWallet) BackupWallet(destPath string) error {
 	return os.WriteFile(destPath, data, 0600)
 }
 
-// --- Encryption (Bitcoin Core parity: encryptwallet / walletpassphrase / walletlock) ---
+// --- Encryption (Xcosh Core parity: encryptwallet / walletpassphrase / walletlock) ---
 
 const (
 	scryptN = 1 << 15 // 32768
@@ -981,7 +981,7 @@ func (w *HDWallet) IsEncrypted() bool {
 // IsLocked returns whether the wallet is currently locked.
 // An unencrypted wallet is never locked.
 // If the timed unlock has expired, the wallet is re-locked and the
-// in-memory AES key is wiped (matching Bitcoin Core's auto-relock).
+// in-memory AES key is wiped (matching Xcosh Core's auto-relock).
 func (w *HDWallet) IsLocked() bool {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -1001,8 +1001,8 @@ func (w *HDWallet) IsLocked() bool {
 }
 
 // EncryptWallet encrypts the wallet with the given passphrase.
-// After encryption the wallet is locked. This matches Bitcoin Core's
-// encryptwallet behavior (requires restart in Bitcoin Core; we lock in-place).
+// After encryption the wallet is locked. This matches Xcosh Core's
+// encryptwallet behavior (requires restart in Xcosh Core; we lock in-place).
 func (w *HDWallet) EncryptWallet(passphrase string) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -1100,7 +1100,7 @@ func decryptPayloadFromWalletData(wd *WalletData, passphrase string) ([]byte, er
 	return plaintext, nil
 }
 
-// ChangeWalletPassphrase replaces the wallet encryption passphrase (Bitcoin Core
+// ChangeWalletPassphrase replaces the wallet encryption passphrase (Xcosh Core
 // walletpassphrasechange). The old passphrase must be correct; if the wallet is
 // unlocked, in-memory state (e.g. recent imports) is merged into the new blob.
 func (w *HDWallet) ChangeWalletPassphrase(oldPassphrase, newPassphrase string) error {
@@ -1198,7 +1198,7 @@ func (w *HDWallet) ChangeWalletPassphrase(oldPassphrase, newPassphrase string) e
 }
 
 // WalletPassphrase unlocks the wallet for the given duration.
-// Matches Bitcoin Core's walletpassphrase RPC.
+// Matches Xcosh Core's walletpassphrase RPC.
 func (w *HDWallet) WalletPassphrase(passphrase string, timeoutSecs int64) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -1271,7 +1271,7 @@ func (w *HDWallet) WalletPassphrase(passphrase string, timeoutSecs int64) error 
 	return nil
 }
 
-// WalletLock immediately locks the wallet. Matches Bitcoin Core's walletlock RPC.
+// WalletLock immediately locks the wallet. Matches Xcosh Core's walletlock RPC.
 // Sensitive key material is zeroed from memory to limit the window of exposure.
 func (w *HDWallet) WalletLock() error {
 	w.mu.Lock()

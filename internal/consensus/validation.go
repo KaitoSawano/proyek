@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // ValidateBlockStructure performs consensus checks on block structure that are
@@ -176,7 +176,7 @@ func ValidateHeaderTimestamp(header *types.BlockHeader, parent *types.BlockHeade
 // with a serialized block height and be between 2 and 100 bytes total.
 //
 // The height is encoded as a CScript number: first byte is the number of bytes
-// that follow, then the height in little-endian. For heights 0-16 Bitcoin uses
+// that follow, then the height in little-endian. For heights 0-16 Xcosh uses
 // OP_0..OP_16, but this implementation always uses the explicit push encoding for
 // simplicity (matching the miner's buildCoinbase format).
 func validateCoinbaseScriptSig(scriptSig []byte, height uint32) error {

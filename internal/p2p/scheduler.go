@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/logging"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 const (
@@ -328,7 +328,7 @@ func (s *BlockScheduler) AssignWork(peerAddr string, limit int, peerBestHeight u
 // BlockReceived is called when a block body arrives from a peer.
 // Returns true if the block was expected (was in-flight).
 // Defense-in-depth: verifies the block header hashes to the expected hash
-// before accepting it into staging (Bitcoin Core re-verifies in net_processing).
+// before accepting it into staging (Xcosh Core re-verifies in net_processing).
 func (s *BlockScheduler) BlockReceived(hash types.Hash, block *types.Block, peerAddr string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -434,7 +434,7 @@ func (s *BlockScheduler) TryStageUnsolicited(blockHash types.Hash, block *types.
 // DrainReady returns the single next block that can be connected at
 // nextConnectHeight, if it is present in staging. Unlike a multi-block batch,
 // nextConnectHeight is not advanced here — only after ProcessBlock succeeds
-// (UpdateNextConnectHeight), matching Bitcoin Core's commit-after-validation
+// (UpdateNextConnectHeight), matching Xcosh Core's commit-after-validation
 // ordering and avoiding scheduler/chain tip skew when validation fails.
 //
 // When a fork queue is active (divergent best-header chain), fork blocks are

@@ -1,6 +1,6 @@
 {
   "network": "testnet",
-  "data_dir": "/tmp/fairchain-testnet",
+  "data_dir": "/tmp/xcosh-testnet",
   "listen_addr": "0.0.0.0:19334",
   "rpc_addr": "127.0.0.1:19335",
   "seed_peers": [],

@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,14 +14,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256d"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	bitcoindiff "github.com/bams-repo/fairchain/internal/difficulty/bitcoin"
-	fcparams "github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/types"
-	"github.com/bams-repo/fairchain/internal/utxo"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256d"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	xcoshdiff "github.com/bams-repo/xcosh/internal/difficulty/xcosh"
+	fcparams "github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/bams-repo/xcosh/internal/utxo"
 )
 
 // setupReorgTestChain creates a chain with CoinbaseMaturity=1 so coinbase
@@ -44,7 +44,7 @@ func setupReorgTestChain(t *testing.T) (*Chain, *fcparams.ChainParams) {
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -62,7 +62,7 @@ func setupReorgTestChain(t *testing.T) (*Chain, *fcparams.ChainParams) {
 	}
 	t.Cleanup(func() { s.Close() })
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)
@@ -141,7 +141,7 @@ func mineBlockOnParentWithValue(t *testing.T, parentHash types.Hash, parentHeade
 	}
 
 	target := crypto.CompactToHash(header.Bits)
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	found, _ := engine.SealHeader(&header, target, 1, p, 10_000_000)
 	if !found {
 		t.Fatalf("could not mine block (tag=%s)", tag)
@@ -342,7 +342,7 @@ func TestReorgSafety_DiskConsistencyAfterFailure(t *testing.T) {
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -359,7 +359,7 @@ func TestReorgSafety_DiskConsistencyAfterFailure(t *testing.T) {
 		t.Fatalf("open store: %v", err)
 	}
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)
@@ -574,7 +574,7 @@ func TestReorgSafety_MaxReorgDepthBoundary(t *testing.T) {
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	if err := pow.New(sha256d.New(), bitcoindiff.New()).MineGenesis(&genesis); err != nil {
+	if err := pow.New(sha256d.New(), xcoshdiff.New()).MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
 	genesisHash := crypto.HashBlockHeader(&genesis.Header)
@@ -592,7 +592,7 @@ func TestReorgSafety_MaxReorgDepthBoundary(t *testing.T) {
 	}
 	t.Cleanup(func() { s.Close() })
 
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	c := New(p, engine, s, nil)
 	if err := c.Init(); err != nil {
 		t.Fatalf("init chain: %v", err)

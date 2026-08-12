@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,15 +14,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256d"
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	bitcoindiff "github.com/bams-repo/fairchain/internal/difficulty/bitcoin"
-	"github.com/bams-repo/fairchain/internal/mempool"
-	"github.com/bams-repo/fairchain/internal/p2p"
-	fcparams "github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/store"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256d"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	xcoshdiff "github.com/bams-repo/xcosh/internal/difficulty/xcosh"
+	"github.com/bams-repo/xcosh/internal/mempool"
+	"github.com/bams-repo/xcosh/internal/p2p"
+	fcparams "github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/store"
 )
 
 func setupTestServer(t *testing.T) *Server {
@@ -30,7 +30,7 @@ func setupTestServer(t *testing.T) *Server {
 
 	p := &fcparams.ChainParams{}
 	*p = *fcparams.Regtest
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 
 	cfg := fcparams.GenesisConfig{
 		NetworkName:     "regtest",
@@ -726,7 +726,7 @@ func TestLongPollStateSameIDNoWake(t *testing.T) {
 func TestGetBlockTemplateRulesParam(t *testing.T) {
 	srv := setupTestServer(t)
 
-	// Bitcoin Core clients send rules array; ensure it doesn't cause errors.
+	// Xcosh Core clients send rules array; ensure it doesn't cause errors.
 	body := `{"jsonrpc":"1.0","id":"gbt","method":"getblocktemplate","params":[{"rules":["segwit"]}]}`
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(body))
 	w := httptest.NewRecorder()
@@ -744,7 +744,7 @@ func TestGetBlockTemplateRulesParam(t *testing.T) {
 func TestCkpoolStyleGetBlockTemplate(t *testing.T) {
 	srv := setupTestServer(t)
 
-	// This is the exact format ckpool sends to bitcoind.
+	// This is the exact format ckpool sends to xcoshd.
 	body := `{"jsonrpc":"1.0","id":"ckpool","method":"getblocktemplate","params":[{"capabilities":["coinbasetxn","workid","coinbase/append","coinbasevalue"],"rules":["segwit"]}]}`
 	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(body))
 	w := httptest.NewRecorder()
@@ -806,7 +806,7 @@ func TestNotifyBlockChange(t *testing.T) {
 
 // --- Stratum Server Compatibility Tests ---
 // These tests verify the exact JSON-RPC behavior that ckpool, Braiins Pool,
-// and other standard Bitcoin stratum servers expect from the node backend.
+// and other standard Xcosh stratum servers expect from the node backend.
 
 func TestCkpoolGetBestBlockHash(t *testing.T) {
 	srv := setupTestServer(t)

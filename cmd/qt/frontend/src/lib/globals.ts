@@ -3,8 +3,8 @@ import { CoinInfo } from "./types";
 export const globals = {
   // Fallback coin info if the coin info is not available
   FALLBACK_COIN_INFO: {
-    name: "Fairchain",
-    nameLower: "fairchain",
+    name: "Xcosh",
+    nameLower: "xcosh",
     ticker: "FAIR",
     decimals: 8,
     baseUnitName: "base unit",
@@ -18,7 +18,7 @@ export const globals = {
   MAX_GEO_LOOKUPS: 20,
 
   // Geo cache key for the map
-  GEO_CACHE_KEY: "fairchain.nodeMap.geo.v1",
+  GEO_CACHE_KEY: "xcosh.nodeMap.geo.v1",
 
   // Geo cache ttl for the map
   GEO_CACHE_TTL_MS: 24 * 60 * 60 * 1000,

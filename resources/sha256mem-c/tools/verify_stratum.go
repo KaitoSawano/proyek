@@ -1,4 +1,4 @@
-// Quick verification: build header from stratum params using Fairchain's exact logic
+// Quick verification: build header from stratum params using Xcosh's exact logic
 package main
 
 import (
@@ -54,7 +54,7 @@ func main() {
 	cbHash := doubleSHA256(coinbase)
 
 	// Merkle root (no branches → cbHash is the root)
-	// In Fairchain: types.Hash stores LE (reversed). Reversed() → header.
+	// In Xcosh: types.Hash stores LE (reversed). Reversed() → header.
 	// But cbHash from doubleSHA256 is raw SHA256 output (same as types.Hash.Reversed()).
 	// For header: merkleRootBE = merkleRoot.Reversed()
 	// If merkleRoot = types.Hash(cbHash reversed), then merkleRootBE = cbHash.

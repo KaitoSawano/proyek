@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -199,8 +199,8 @@ func TestWIFDecodeInvalid(t *testing.T) {
 	}
 }
 
-func TestKnownBitcoinAddress(t *testing.T) {
-	// Bitcoin mainnet address for all-zero pubkey hash should be "1111111111111111111114oLvT2".
+func TestKnownXcoshAddress(t *testing.T) {
+	// Xcosh mainnet address for all-zero pubkey hash should be "1111111111111111111114oLvT2".
 	var pkh [PubKeyHashSize]byte // all zeros
 	addr := PubKeyHashToAddress(pkh, 0x00)
 	ver, decoded, err := AddressToPubKeyHash(addr)

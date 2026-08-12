@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -11,7 +11,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/types"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"golang.org/x/crypto/ripemd160"
 )
@@ -49,7 +49,7 @@ func PubKeyFromBytes(b []byte) (*secp256k1.PublicKey, error) {
 	return secp256k1.ParsePubKey(b)
 }
 
-// Hash160 computes RIPEMD160(SHA256(data)), the standard Bitcoin address hash.
+// Hash160 computes RIPEMD160(SHA256(data)), the standard Xcosh address hash.
 func Hash160(data []byte) [PubKeyHashSize]byte {
 	sha := sha256.Sum256(data)
 	rip := ripemd160.New()
@@ -69,7 +69,7 @@ func PubKeyHash(compressedPubKey []byte) [PubKeyHashSize]byte {
 //
 //	OP_DUP OP_HASH160 <20-byte pubkey hash> OP_EQUALVERIFY OP_CHECKSIG
 //
-// This is the Bitcoin-standard output script format.
+// This is the Xcosh-standard output script format.
 func MakeP2PKHScript(pubKeyHash [PubKeyHashSize]byte) []byte {
 	script := make([]byte, 25)
 	script[0] = OpDup
@@ -168,7 +168,7 @@ const SigHashAll = 0x01
 
 // ComputeSigHash computes the hash that is signed for input inputIdx of tx.
 // Uses SIGHASH_ALL: all inputs and outputs are committed.
-// The algorithm matches Bitcoin's original sighash:
+// The algorithm matches Xcosh's original sighash:
 //  1. Copy the transaction
 //  2. Clear all input scripts
 //  3. Set the script of the input being signed to the subscript (prevout's PkScript)
@@ -204,7 +204,7 @@ func ComputeSigHash(tx *types.Transaction, inputIdx int, subscript []byte) (type
 		return types.ZeroHash, fmt.Errorf("serialize sighash copy: %w", err)
 	}
 
-	// Append sighash type as 4-byte LE (Bitcoin convention).
+	// Append sighash type as 4-byte LE (Xcosh convention).
 	var hashTypeBuf [4]byte
 	hashTypeBuf[0] = SigHashAll
 	data = append(data, hashTypeBuf[:]...)

@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -81,7 +81,7 @@ func base58Checksum(payload []byte) [4]byte {
 }
 
 // Base58CheckEncode encodes a version byte and payload into a Base58Check string.
-// This is the standard Bitcoin address encoding: version(1) + payload(N) + checksum(4).
+// This is the standard Xcosh address encoding: version(1) + payload(N) + checksum(4).
 func Base58CheckEncode(version byte, payload []byte) string {
 	versioned := make([]byte, 1+len(payload))
 	versioned[0] = version
@@ -133,14 +133,14 @@ func AddressToPubKeyHash(address string) (version byte, pubKeyHash [PubKeyHashSi
 	return ver, pubKeyHash, nil
 }
 
-// WIF version bytes matching Bitcoin Core.
+// WIF version bytes matching Xcosh Core.
 const (
 	WIFVersionMainnet = 0x80
 	WIFVersionTestnet = 0xEF
 )
 
 // EncodeWIF encodes a 32-byte private key into Wallet Import Format (WIF).
-// Bitcoin Core WIF: Base58Check(version(1) + privkey(32) + compressed_flag(1))
+// Xcosh Core WIF: Base58Check(version(1) + privkey(32) + compressed_flag(1))
 // The compressed flag byte (0x01) indicates the corresponding public key is compressed.
 func EncodeWIF(privKey []byte, addrVersion byte) string {
 	wifVersion := WIFVersionMainnet

@@ -1,5 +1,5 @@
 /*
- * sha256mem GPU Miner — submits blocks to a Fairchain daemon
+ * sha256mem GPU Miner — submits blocks to a Xcosh daemon
  * ============================================================
  * Uses opencl/sha256mem_v4_gpu.cl (linear 64 MiB) or opencl/sha256mem_v4_tmto_gpu.cl (--tmto,
  * consensus-equivalent time–memory tradeoff) to mine blocks
@@ -15,7 +15,7 @@
  *   ./gpu_miner --tmto                            # TMTO kernel (~512 KiB/worker, SRBMiner-class occupancy)
  *   ./gpu_miner --honest                            # use wall-clock timestamps
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 
@@ -477,7 +477,7 @@ int main(int argc, char **argv)
 
     size_t total_vram = (size_t)num_workers * MEM_PER_WORKER;
 
-    printf("sha256mem GPU Miner — Fairchain %s\n", use_tmto ? "(TMTO)" : "(linear 64 MiB)");
+    printf("sha256mem GPU Miner — Xcosh %s\n", use_tmto ? "(TMTO)" : "(linear 64 MiB)");
     printf("  GPU:       %s\n", dev_name);
     printf("  VRAM:      %lu / %lu MiB\n",
            (unsigned long)(total_vram/(1024*1024)),

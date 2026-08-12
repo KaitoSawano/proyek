@@ -22,8 +22,8 @@ Replace the module path in `go.mod` with your own:
 
 ```bash
 # Replace the module path throughout the codebase.
-# Example: changing from github.com/bams-repo/fairchain to github.com/yourorg/mychain
-OLD_MODULE="github.com/bams-repo/fairchain"
+# Example: changing from github.com/bams-repo/xcosh to github.com/yourorg/mychain
+OLD_MODULE="github.com/bams-repo/xcosh"
 NEW_MODULE="github.com/yourorg/mychain"
 
 # Update go.mod
@@ -74,7 +74,7 @@ The `Algorithm` constant in `coinparams.go` selects the proof-of-work hash funct
 
 | Algorithm | Value | Memory | Description |
 |-----------|-------|--------|-------------|
-| DoubleSHA256 | `"sha256d"` | None | Bitcoin-compatible default. ASIC-mineable. Fastest validation. |
+| DoubleSHA256 | `"sha256d"` | None | Xcosh-compatible default. ASIC-mineable. Fastest validation. |
 | Argon2id | `"argon2d"` | 256 KiB | CPU-fair, ASIC-resistant. RFC 9106. |
 | Scrypt | `"scrypt"` | ~128 KiB | Memory-hard (Litecoin-style). ASIC-resistant. |
 | SHA256-Mem | `"sha256mem"` | 2 MiB | Memory-hard SHA256. Phone-competitive. No novel crypto. |
@@ -167,12 +167,12 @@ func NetworkByName(name string) *ChainParams {
 **Parameter guide:**
 
 - **NetworkMagic**: Must be unique. Prevents cross-chain peer connections.
-- **TargetBlockSpacing**: How often blocks should be found. Bitcoin uses 10 minutes.
-- **RetargetInterval**: How often difficulty adjusts. Bitcoin uses 2016 blocks.
+- **TargetBlockSpacing**: How often blocks should be found. Xcosh uses 10 minutes.
+- **RetargetInterval**: How often difficulty adjusts. Xcosh uses 2016 blocks.
 - **InitialBits**: Starting difficulty. Use `0x207fffff` for regtest (trivial), `0x1e0fffff` for testnet, `0x1d00ffff` for mainnet.
 - **InitialSubsidy**: Block reward in base units (1 coin = 100,000,000 base units).
-- **SubsidyHalvingInterval**: Blocks between reward halvings. Bitcoin uses 210,000.
-- **CoinbaseMaturity**: Blocks before mined coins are spendable. Bitcoin uses 100.
+- **SubsidyHalvingInterval**: Blocks between reward halvings. Xcosh uses 210,000.
+- **CoinbaseMaturity**: Blocks before mined coins are spendable. Xcosh uses 100.
 
 ## Step 6: Mine Your Genesis Block
 
@@ -215,7 +215,7 @@ Optional flags:
 
 ## Step 7: Build System (Automatic)
 
-The build system follows the standard Unix `./configure && make` pattern, modeled after Bitcoin Core. All binary names are derived from `coinparams.go` — there is nothing to manually rename in the Makefile or CI.
+The build system follows the standard Unix `./configure && make` pattern, modeled after Xcosh Core. All binary names are derived from `coinparams.go` — there is nothing to manually rename in the Makefile or CI.
 
 ### Configure and build
 
@@ -237,7 +237,7 @@ The `./configure` script:
 - Resolves full absolute paths to all tools (no PATH issues)
 - Auto-detects the correct WebKit version (4.0 vs 4.1) and sets the right build tag
 - Writes `config.mk` which the Makefile includes
-- Accepts Bitcoin Core-style flags: `--with-qt`, `--without-qt`, `--with-wallet`, etc.
+- Accepts Xcosh Core-style flags: `--with-qt`, `--without-qt`, `--with-wallet`, etc.
 
 ### How naming works
 
@@ -293,7 +293,7 @@ The configure script will detect all of these and tell you what's missing.
 
 ### Systemd Service (optional)
 
-If deploying on Linux, update `scripts/fairchain-testnet.service`:
+If deploying on Linux, update `scripts/xcosh-testnet.service`:
 
 - Binary path
 - Service name

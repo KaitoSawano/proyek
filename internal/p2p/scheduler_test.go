@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -12,14 +12,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bams-repo/fairchain/internal/algorithms/sha256d"
-	"github.com/bams-repo/fairchain/internal/chain"
-	"github.com/bams-repo/fairchain/internal/consensus/pow"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	bitcoindiff "github.com/bams-repo/fairchain/internal/difficulty/bitcoin"
-	fcparams "github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/store"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms/sha256d"
+	"github.com/bams-repo/xcosh/internal/chain"
+	"github.com/bams-repo/xcosh/internal/consensus/pow"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	xcoshdiff "github.com/bams-repo/xcosh/internal/difficulty/xcosh"
+	fcparams "github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 var testHeaderNonceMu sync.Mutex
@@ -41,7 +41,7 @@ func schedulerTestSetup(t *testing.T, headerCount int) (*BlockScheduler, *chain.
 		RewardScript:    []byte{0x00},
 	}
 	genesis := fcparams.BuildGenesisBlock(cfg)
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	if err := engine.MineGenesis(&genesis); err != nil {
 		t.Fatalf("mine genesis: %v", err)
 	}
@@ -105,7 +105,7 @@ func mineTestHeader(t *testing.T, parent *types.BlockHeader, p *fcparams.ChainPa
 	}
 
 	target := crypto.CompactToHash(header.Bits)
-	engine := pow.New(sha256d.New(), bitcoindiff.New())
+	engine := pow.New(sha256d.New(), xcoshdiff.New())
 	found, _ := engine.SealHeader(&header, target, 1, p, 10_000_000)
 	if !found {
 		t.Fatal("could not mine header")

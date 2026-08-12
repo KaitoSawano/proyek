@@ -197,7 +197,7 @@ function viewMeta(pathname: string): { title: string; subtitle: string } {
     return { title: "Social", subtitle: "Wallet IRC — community channel" };
   }
   if (p === "/node-map" || p.startsWith("/node-map/")) {
-    return { title: "Node Map", subtitle: "View the node map for the Fairchain network" };
+    return { title: "Node Map", subtitle: "View the node map for the Xcosh network" };
   }
   if (p === "/transactions" || p.startsWith("/transactions/")) {
     return { title: "Transactions", subtitle: "Wallet history: sends, receives, coinbase, and coin maturity" };
@@ -226,7 +226,7 @@ function viewMeta(pathname: string): { title: string; subtitle: string } {
   if (p === "/send" || p.startsWith("/send/")) {
     return { title: "Send", subtitle: "Send coins to another address" };
   }
-  return { title: "Wallet", subtitle: "Fairchain" };
+  return { title: "Wallet", subtitle: "Xcosh" };
 }
 
 export default function MainLayout() {

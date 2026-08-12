@@ -7,7 +7,7 @@
 #   ./configure --without-qt     # explicitly disable GUI wallet
 #   ./configure --prefix=/usr    # set install prefix
 #
-# Modeled after Bitcoin Core's ./configure. Writes config.mk which the
+# Modeled after Xcosh Core's ./configure. Writes config.mk which the
 # Makefile includes. Run once after cloning or when dependencies change.
 set -euo pipefail
 

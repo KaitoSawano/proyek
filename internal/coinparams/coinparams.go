@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -18,7 +18,7 @@ func init() {
 }
 
 const (
-	// Name is the human-readable coin name (e.g., "Fairchain", "Bitcoin", "Litecoin").
+	// Name is the human-readable coin name (e.g., "Xcosh", "Xcosh", "Litecoin").
 	Name = "Xcosh"
 
 	// NameLower is the lowercase form used in paths, config files, and CLI.
@@ -39,13 +39,13 @@ const (
 	// AdversaryToolName is the binary name for the adversary testing tool.
 	AdversaryToolName = "xcosh-adversary"
 
-	// GUIName is the binary name for the GUI wallet (e.g., "fairchain-qt").
+	// GUIName is the binary name for the GUI wallet (e.g., "xcosh-qt").
 	GUIName = "xcosh-qt"
 
-	// DefaultDataDirName is the hidden directory name in the user's home (e.g., ".fairchain").
+	// DefaultDataDirName is the hidden directory name in the user's home (e.g., ".xcosh").
 	DefaultDataDirName = ".xcosh"
 
-	// ConfFileName is the INI-style config file name (e.g., "fairchain.conf").
+	// ConfFileName is the INI-style config file name (e.g., "xcosh.conf").
 	ConfFileName = "xcosh.conf"
 
 	// CoinbaseTag is the ASCII tag embedded in coinbase transactions.
@@ -54,7 +54,7 @@ const (
 	// RPCRealm is the HTTP Basic Auth realm for the RPC server.
 	RPCRealm = "xcosh-rpc"
 
-	// UserAgentPrefix is the BIP-style user agent prefix (e.g., "/fairchain:").
+	// UserAgentPrefix is the BIP-style user agent prefix (e.g., "/xcosh:").
 	UserAgentPrefix = "/xcosh:"
 
 	// CopyrightHolder is the name used in LICENSE and legal notices.
@@ -68,21 +68,21 @@ const (
 	DisplayUnitName = "xcosh"
 
 	// Decimals is the number of decimal places between the display unit and
-	// the smallest indivisible base unit. For example, Bitcoin uses 8 (1 BTC
+	// the smallest indivisible base unit. For example, Xcosh uses 8 (1 BTC
 	// = 100,000,000 satoshi). Valid range: 0–18. Changing this is a
 	// consensus / hard-fork change.
 	Decimals = 8
 
 	// Algorithm is the PoW hash algorithm name. Must match a registered
 	// algorithm in internal/algorithms/. Changing this is a hard fork.
-	// Options: "sha256d" (Bitcoin-compatible), "argon2id" (CPU-fair, RFC 9106),
+	// Options: "sha256d" (Xcosh-compatible), "argon2id" (CPU-fair, RFC 9106),
 	//          "scrypt" (Litecoin-style), "sha256mem" (memory-hard SHA256)
 	Algorithm = "sha256mem"
 
 	// DifficultyAlgorithm is the difficulty retargeting algorithm name.
 	// Must match a registered algorithm in internal/difficulty/.
 	// Changing this is a consensus / hard-fork change.
-	// Options: "bitcoin"    (Nakamoto-style epoch retarget with EDA),
+	// Options: "xcosh"    (Nakamoto-style epoch retarget with EDA),
 	//          "lwma"       (zawy12 LWMA-1, per-block weighted moving average),
 	//          "dgw"        (Dark Gravity Wave v3, per-block averaging, Dash-style),
 	//          "digishield" (DigiShield v3, per-block asymmetric dampening, Dogecoin/Zcash-style)

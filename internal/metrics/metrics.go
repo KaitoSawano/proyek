@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -69,7 +69,7 @@ type promMetric struct {
 // Prometheus returns all metrics in Prometheus exposition text format
 // (text/plain; version=0.0.4). No external dependencies required.
 func (m *NodeMetrics) Prometheus() string {
-	const ns = "fairchain"
+	const ns = "xcosh"
 	metrics := []promMetric{
 		{ns + "_blocks_accepted_total", "Total blocks accepted into the chain.", "counter", m.BlocksAccepted.Load()},
 		{ns + "_blocks_rejected_total", "Total blocks rejected by validation.", "counter", m.BlocksRejected.Load()},

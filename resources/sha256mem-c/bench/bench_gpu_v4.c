@@ -12,7 +12,7 @@
  *   ./bench_gpu_v4 1500 2           # 1500 workers, 2 hashes each
  *   ./bench_gpu_v4 1500 4 5         # 1500 workers, 4 hashes each, 5 batches
  *
- * Copyright (c) 2024-2026 The Fairchain Contributors
+ * Copyright (c) 2024-2026 The Xcosh Contributors
  * Distributed under the MIT software license.
  */
 
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     size_t total_vram = (size_t)num_workers * MEM_PER_WORKER;
 
     printf("==================================================================\n");
-    printf("     sha256mem v4 GPU Benchmark — Fairchain PoW\n");
+    printf("     sha256mem v4 GPU Benchmark — Xcosh PoW\n");
     printf("==================================================================\n");
     printf("  GPU:          %s\n", dev_name);
     printf("  Compute units: %u @ %u MHz\n", dev_cu, dev_freq);

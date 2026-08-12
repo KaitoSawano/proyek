@@ -1,6 +1,6 @@
-# Contributing to Fairchain
+# Contributing to Xcosh
 
-Thank you for considering contributing to Fairchain. This project is built in the
+Thank you for considering contributing to Xcosh. This project is built in the
 open and welcomes contributions of all kinds — code, documentation, testing,
 bug reports, and ideas.
 
@@ -15,11 +15,11 @@ See [Getting Started](DOCS/getting-started.md) for detailed build instructions.
 
 ## Development Guidelines
 
-### Bitcoin Core Parity
+### Xcosh Core Parity
 
-Fairchain maintains parity with Bitcoin wherever possible. When implementing
-new features or fixing bugs, refer to Bitcoin Core's approach first. Deviations
-are acceptable only when Bitcoin's design doesn't make sense for a smaller
+Xcosh maintains parity with Xcosh wherever possible. When implementing
+new features or fixing bugs, refer to Xcosh Core's approach first. Deviations
+are acceptable only when Xcosh's design doesn't make sense for a smaller
 network — document the reasoning in your PR.
 
 ### Code Style
@@ -56,7 +56,7 @@ network — document the reasoning in your PR.
 Open an issue using the bug report template. Include:
 - Steps to reproduce
 - Expected vs actual behavior
-- OS, Go version, and Fairchain version
+- OS, Go version, and Xcosh version
 - Relevant log output
 
 ## Security Vulnerabilities

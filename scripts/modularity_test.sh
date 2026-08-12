@@ -3,7 +3,7 @@
 set -uo pipefail
 
 # ==========================================================================
-# FAIRCHAIN CONSENSUS ENGINE MODULARITY TEST
+# XCOSH CONSENSUS ENGINE MODULARITY TEST
 #
 # Validates that the consensus engine is truly modular by:
 #   1. Building separate node binaries for each PoW algorithm
@@ -109,10 +109,10 @@ portable_sleep() {
 kill_all_modtest_nodes() {
     case "$CHAOS_OS" in
         windows)
-            taskkill //F //IM "fairchaind${EXE_SUFFIX}" &>/dev/null || true
+            taskkill //F //IM "xcoshd${EXE_SUFFIX}" &>/dev/null || true
             ;;
         *)
-            pkill -9 -f "fairchaind.*modularity-runs" 2>/dev/null || true
+            pkill -9 -f "xcoshd.*modularity-runs" 2>/dev/null || true
             ;;
     esac
 }
@@ -214,7 +214,7 @@ trap cleanup EXIT
 
 build_algo_binary() {
     local algo=$1
-    local outpath="${BIN_DIR}/fairchaind-${algo}${EXE_SUFFIX}"
+    local outpath="${BIN_DIR}/xcoshd-${algo}${EXE_SUFFIX}"
 
     log "Building binary for algorithm: ${algo}..."
 
@@ -520,7 +520,7 @@ pick_random_miner() {
 
 echo ""
 echo "════════════════════════════════════════════════════════════════════"
-echo " FAIRCHAIN CONSENSUS ENGINE MODULARITY TEST"
+echo " XCOSH CONSENSUS ENGINE MODULARITY TEST"
 echo " Algorithms: ${ALGORITHMS[*]}"
 echo " ${NUM_SEEDS} Seeds + ${NUM_MINERS} Miners per algo · testnet · 5s blocks"
 echo "────────────────────────────────────────────────────────────────────"
@@ -572,7 +572,7 @@ for algo in "${ALGORITHMS[@]}"; do
     # Each algorithm gets a unique port offset (100 ports apart).
     ALGO_PORT_OFFSET=$((ALGO_IDX * 100))
 
-    BIN_ALGO="${BIN_DIR}/fairchaind-${algo}${EXE_SUFFIX}"
+    BIN_ALGO="${BIN_DIR}/xcoshd-${algo}${EXE_SUFFIX}"
 
     echo ""
     echo "╔══════════════════════════════════════════════════════════════╗"

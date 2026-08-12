@@ -1,5 +1,5 @@
-// Copyright (c) 2024-2026 The Fairchain Contributors
-// Fairchain is an experiment in modularity, designed to improve on the work
+// Copyright (c) 2024-2026 The Xcosh Contributors
+// Xcosh is an experiment in modularity, designed to improve on the work
 // of Satoshi Nakamoto and to inspire more creative genius in the space.
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -10,12 +10,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/bams-repo/fairchain/internal/algorithms"
-	"github.com/bams-repo/fairchain/internal/consensus"
-	"github.com/bams-repo/fairchain/internal/crypto"
-	"github.com/bams-repo/fairchain/internal/difficulty"
-	"github.com/bams-repo/fairchain/internal/params"
-	"github.com/bams-repo/fairchain/internal/types"
+	"github.com/bams-repo/xcosh/internal/algorithms"
+	"github.com/bams-repo/xcosh/internal/consensus"
+	"github.com/bams-repo/xcosh/internal/crypto"
+	"github.com/bams-repo/xcosh/internal/difficulty"
+	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/bams-repo/xcosh/internal/types"
 )
 
 // Engine implements the baseline Nakamoto-style proof-of-work consensus.
@@ -55,7 +55,7 @@ func (e *Engine) CalcBlockWeight(header *types.BlockHeader) *big.Int {
 //
 // On networks with AllowMinDifficultyBlocks (testnet), a block may use MinBits
 // if its timestamp exceeds the parent's by more than 2x the target block spacing.
-// This matches Bitcoin Core's testnet difficulty reset rule and prevents
+// This matches Xcosh Core's testnet difficulty reset rule and prevents
 // difficulty death spirals when mining is intermittent.
 func (e *Engine) ValidateHeader(header *types.BlockHeader, parent *types.BlockHeader, height uint32, getAncestor func(uint32) *types.BlockHeader, p *params.ChainParams) error {
 	parentHash := crypto.HashBlockHeader(parent)
@@ -80,14 +80,14 @@ func (e *Engine) ValidateHeader(header *types.BlockHeader, parent *types.BlockHe
 
 // calcExpectedBits computes the expected difficulty bits for a block at the
 // given height. On testnet (AllowMinDifficultyBlocks), this implements
-// Bitcoin Core's min-difficulty reset: if the new block's timestamp is more
+// Xcosh Core's min-difficulty reset: if the new block's timestamp is more
 // than 2x the target spacing after the parent, MinBits is required. On
 // non-retarget boundaries, if the parent used min-difficulty, we scan back
 // to find the last block with real difficulty to prevent min-difficulty
 // blocks from corrupting the next retarget calculation.
 //
 // Per-block algorithms (LWMA, DGW, DigiShield) always call CalcNextBits
-// every block — the epoch-gating logic only applies to Bitcoin's epoch-based
+// every block — the epoch-gating logic only applies to Xcosh's epoch-based
 // retarget where difficulty is constant between boundaries.
 func (e *Engine) calcExpectedBits(header *types.BlockHeader, parent *types.BlockHeader, height uint32, getAncestor func(uint32) *types.BlockHeader, p *params.ChainParams) uint32 {
 	activationHeight, hasActivation := p.ActivationHeights["mindiffblocks"]
@@ -96,7 +96,7 @@ func (e *Engine) calcExpectedBits(header *types.BlockHeader, parent *types.Block
 	}
 
 	// MinDifficultyGap controls how long the network must stall before
-	// min-difficulty kicks in. Defaults to 2*TargetBlockSpacing (Bitcoin
+	// min-difficulty kicks in. Defaults to 2*TargetBlockSpacing (Xcosh
 	// Core behavior) if not explicitly set.
 	minDiffGap := int64(p.MinDifficultyGap.Seconds())
 	if minDiffGap <= 0 {
@@ -105,14 +105,14 @@ func (e *Engine) calcExpectedBits(header *types.BlockHeader, parent *types.Block
 
 	// Per-block retargeters adjust every block; only apply the min-diff
 	// timestamp gap rule, then always compute fresh difficulty.
-	if e.retargeter.Name() != "bitcoin" {
+	if e.retargeter.Name() != "xcosh" {
 		if int64(header.Timestamp)-int64(parent.Timestamp) > minDiffGap {
 			return p.MinBits
 		}
 		return e.retargeter.CalcNextBits(parent, height-1, getAncestor, p)
 	}
 
-	// Bitcoin epoch-based: min-diff gap check, then epoch-boundary retarget.
+	// Xcosh epoch-based: min-diff gap check, then epoch-boundary retarget.
 	if int64(header.Timestamp)-int64(parent.Timestamp) > minDiffGap {
 		return p.MinBits
 	}
