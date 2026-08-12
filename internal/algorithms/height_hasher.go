@@ -3,7 +3,7 @@
 
 package algorithms
 
-import "github.com/bams-repo/xcosh/internal/types"
+import "github.com/xcosh-chain/xcosh/types"
 
 // HeightHasher extends Hasher with height-gated PoW (consensus forks).
 // Activation rules are configured when the hasher is constructed.

@@ -9,7 +9,7 @@ package sha256d
 import (
 	"crypto/sha256"
 
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // Hasher implements DoubleSHA256 proof-of-work hashing (Xcosh-parity default).

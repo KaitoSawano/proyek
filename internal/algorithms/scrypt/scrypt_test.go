@@ -9,7 +9,7 @@ package scrypt
 import (
 	"testing"
 
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 func TestPoWHashDeterministic(t *testing.T) {

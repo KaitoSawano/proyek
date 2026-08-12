@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bams-repo/xcosh/internal/logging"
+	"github.com/xcosh-chain/xcosh/logging"
 )
 
 // DumpPeersDat writes all known peers from the peer store to a flat text file.

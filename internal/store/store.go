@@ -9,8 +9,8 @@ package store
 import (
 	"math/big"
 
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // BlockStore abstracts persistent storage for blocks, headers, chain state, and UTXOs.

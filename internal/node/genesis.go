@@ -9,13 +9,13 @@ package node
 import (
 	"fmt"
 
-	"github.com/bams-repo/xcosh/internal/algorithms"
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/consensus/pow"
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/difficulty"
-	"github.com/bams-repo/xcosh/internal/logging"
-	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/xcosh-chain/xcosh/internal/algorithms"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/consensus/pow"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/internal/difficulty"
+	"github.com/xcosh-chain/xcosh/logging"
+	"github.com/xcosh-chain/xcosh/params"
 )
 
 // initNetworkGenesis verifies or mines the genesis block for the given network.

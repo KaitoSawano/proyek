@@ -9,7 +9,7 @@ package argon2id
 import (
 	"golang.org/x/crypto/argon2"
 
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // Consensus-critical Argon2id parameters. Changing any of these is a hard fork.

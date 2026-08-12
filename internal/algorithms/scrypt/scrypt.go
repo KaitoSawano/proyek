@@ -9,7 +9,7 @@ package scrypt
 import (
 	"golang.org/x/crypto/scrypt"
 
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // Consensus-critical Scrypt parameters. Changing any of these is a hard fork.

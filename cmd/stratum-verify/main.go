@@ -9,9 +9,9 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/sha256mem"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 func main() {

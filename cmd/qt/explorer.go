@@ -16,11 +16,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bams-repo/xcosh/internal/chain"
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/types"
-	"github.com/bams-repo/xcosh/internal/utxo"
+	"github.com/xcosh-chain/xcosh/chain"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/types"
+	"github.com/xcosh-chain/xcosh/internal/utxo"
 )
 
 var (

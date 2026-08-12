@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/version"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/version"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/menu"
 	"github.com/wailsapp/wails/v2/pkg/menu/keys"

@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // UtxoEntry represents a single unspent transaction output in the UTXO set.

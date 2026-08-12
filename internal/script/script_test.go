@@ -9,8 +9,8 @@ package script
 import (
 	"testing"
 
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 func makeSignedTx(t *testing.T) (*types.Transaction, []byte, []byte) {

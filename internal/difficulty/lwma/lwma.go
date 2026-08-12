@@ -10,10 +10,10 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/logging"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/logging"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // Retargeter implements zawy12's LWMA-1 (Linearly Weighted Moving Average)

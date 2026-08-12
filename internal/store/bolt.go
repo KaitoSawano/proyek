@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 	bolt "go.etcd.io/bbolt"
 )
 

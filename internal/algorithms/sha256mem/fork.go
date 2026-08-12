@@ -4,7 +4,7 @@
 package sha256mem
 
 import (
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // ActivationKey is the ChainParams.ActivationHeights key for the progression-harden

@@ -11,10 +11,10 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/bams-repo/xcosh/internal/config"
-	"github.com/bams-repo/xcosh/internal/logging"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/store"
+	"github.com/xcosh-chain/xcosh/config"
+	"github.com/xcosh-chain/xcosh/logging"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/internal/store"
 )
 
 // MigrateFromLegacy converts a legacy blocks.db to the new flat-file + LevelDB format.

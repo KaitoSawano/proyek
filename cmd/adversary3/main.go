@@ -21,10 +21,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/algorithms"
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/internal/algorithms"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 var testnetMagic = [4]byte{0xFA, 0x1C, 0xC0, 0x02}

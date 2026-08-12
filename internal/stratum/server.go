@@ -20,14 +20,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/algorithms"
-	"github.com/bams-repo/xcosh/internal/chain"
-	"github.com/bams-repo/xcosh/internal/consensus"
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/logging"
-	"github.com/bams-repo/xcosh/internal/mempool"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/internal/algorithms"
+	"github.com/xcosh-chain/xcosh/chain"
+	"github.com/xcosh-chain/xcosh/consensus"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/logging"
+	"github.com/xcosh-chain/xcosh/mempool"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 const (

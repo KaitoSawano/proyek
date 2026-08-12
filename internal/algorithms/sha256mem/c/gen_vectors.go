@@ -2,7 +2,7 @@
 // Distributed under the MIT software license.
 
 // gen_vectors generates 1000 sha256mem test vectors as hex pairs (input, expected_output).
-// Run from repo root: go run ./internal/algorithms/sha256mem/c/gen_vectors.go
+// Run from repo root: go run ./algorithms/sha256mem/c/gen_vectors.go
 // Output: test_vectors.txt in the current working directory.
 package main
 
@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/sha256mem"
 )
 
 func main() {

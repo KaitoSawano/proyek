@@ -1,4 +1,4 @@
-module github.com/bams-repo/xcosh
+module github.com/xcosh-chain/xcosh
 
 go 1.25.8
 
@@ -45,5 +45,3 @@ require (
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
 )
-
-replace github.com/wailsapp/wails/v2 => ./depends/wails/v2

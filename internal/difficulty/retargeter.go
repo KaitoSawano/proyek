@@ -9,12 +9,12 @@ package difficulty
 import (
 	"fmt"
 
-	"github.com/bams-repo/xcosh/internal/difficulty/xcosh"
-	"github.com/bams-repo/xcosh/internal/difficulty/dgw"
-	"github.com/bams-repo/xcosh/internal/difficulty/digishield"
-	"github.com/bams-repo/xcosh/internal/difficulty/lwma"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/internal/difficulty/xcosh"
+	"github.com/xcosh-chain/xcosh/internal/difficulty/dgw"
+	"github.com/xcosh-chain/xcosh/internal/difficulty/digishield"
+	"github.com/xcosh-chain/xcosh/internal/difficulty/lwma"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // Retargeter computes the next difficulty target for a blockchain.

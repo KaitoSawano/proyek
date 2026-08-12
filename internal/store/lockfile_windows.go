@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
 	"golang.org/x/sys/windows"
 )
 

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 func testParams(N uint32, T int, initialBits, minBits uint32) *params.ChainParams {

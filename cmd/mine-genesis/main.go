@@ -5,13 +5,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/consensus/pow"
-	"github.com/bams-repo/xcosh/internal/crypto"
-	"github.com/bams-repo/xcosh/internal/difficulty"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/sha256mem"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/consensus/pow"
+	"github.com/xcosh-chain/xcosh/crypto"
+	"github.com/xcosh-chain/xcosh/internal/difficulty"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 func mineNetwork(name string, p *params.ChainParams) {

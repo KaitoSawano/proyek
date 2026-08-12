@@ -14,7 +14,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/bams-repo/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
 )
 
 // AcquireLock creates and locks a .lock file using flock advisory locking.

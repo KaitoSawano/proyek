@@ -9,12 +9,12 @@ package algorithms
 import (
 	"fmt"
 
-	"github.com/bams-repo/xcosh/internal/algorithms/argon2id"
-	"github.com/bams-repo/xcosh/internal/algorithms/scrypt"
-	"github.com/bams-repo/xcosh/internal/algorithms/sha256d"
-	"github.com/bams-repo/xcosh/internal/algorithms/sha256mem"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/argon2id"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/scrypt"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/sha256d"
+	"github.com/xcosh-chain/xcosh/internal/algorithms/sha256mem"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 // Hasher computes the proof-of-work hash for a serialized block header.

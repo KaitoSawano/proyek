@@ -7,7 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 
-	"github.com/bams-repo/xcosh/internal/types"
+	"github.com/xcosh-chain/xcosh/types"
 )
 
 const (

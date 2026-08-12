@@ -16,8 +16,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/version"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/version"
 )
 
 func main() {

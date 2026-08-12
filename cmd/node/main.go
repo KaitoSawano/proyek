@@ -15,12 +15,12 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/bams-repo/xcosh/internal/coinparams"
-	"github.com/bams-repo/xcosh/internal/config"
-	"github.com/bams-repo/xcosh/internal/logging"
-	"github.com/bams-repo/xcosh/internal/node"
-	"github.com/bams-repo/xcosh/internal/params"
-	"github.com/bams-repo/xcosh/internal/version"
+	"github.com/xcosh-chain/xcosh/internal/coinparams"
+	"github.com/xcosh-chain/xcosh/config"
+	"github.com/xcosh-chain/xcosh/logging"
+	"github.com/xcosh-chain/xcosh/internal/node"
+	"github.com/xcosh-chain/xcosh/params"
+	"github.com/xcosh-chain/xcosh/version"
 )
 
 func main() {

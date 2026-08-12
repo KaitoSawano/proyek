@@ -6,7 +6,7 @@ package sha256mem
 import (
 	"testing"
 
-	"github.com/bams-repo/xcosh/internal/params"
+	"github.com/xcosh-chain/xcosh/params"
 )
 
 const testnetForkHeight = 85000
