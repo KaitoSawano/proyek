@@ -1,0 +1,562 @@
+// Copyright (c) 2024-2026 The Fairchain Contributors
+// Fairchain is an experiment in modularity, designed to improve on the work
+// of Satoshi Nakamoto and to inspire more creative genius in the space.
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+package miner
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"runtime"
+	"strings"
+	"sync"
+	"sync/atomic"
+	"time"
+
+	"github.com/bams-repo/fairchain/internal/chain"
+	"github.com/bams-repo/fairchain/internal/coinparams"
+	"github.com/bams-repo/fairchain/internal/consensus"
+	"github.com/bams-repo/fairchain/internal/crypto"
+	"github.com/bams-repo/fairchain/internal/logging"
+	"github.com/bams-repo/fairchain/internal/mempool"
+	"github.com/bams-repo/fairchain/internal/params"
+	"github.com/bams-repo/fairchain/internal/types"
+)
+
+// TimeSource provides network-adjusted time for block timestamp construction.
+type TimeSource interface {
+	Now() int64
+}
+
+type localClock struct{}
+
+func (localClock) Now() int64 { return time.Now().Unix() }
+
+// countedSealer is implemented by engines that report actual hash counts.
+type countedSealer interface {
+	SealHeaderCounted(header *types.BlockHeader, target types.Hash, height uint32, p *params.ChainParams, maxIterations uint64) (found bool, hashes uint64, err error)
+}
+
+// Miner builds block templates and searches for valid PoW solutions.
+type Miner struct {
+	chain        *chain.Chain
+	engine       consensus.Engine
+	mempool      *mempool.Mempool
+	params       *params.ChainParams
+	rewardScript []byte
+	timeSource   TimeSource
+	onBlock      func(*types.Block)
+	// allowMining, if non-nil, must return true before building templates or hashing.
+	// Used to suppress mining during P2P header/block sync (IBD) so the block tip
+	// cannot diverge from the header chain. Nil means always allowed.
+	allowMining func() bool
+	workers     int
+
+	// powerLimit controls CPU throttling as a percentage (1–100). At 100% the
+	// miner hashes continuously; at 50% each worker sleeps as long as it works;
+	// lower values insert proportionally longer sleeps. Defaults to 100.
+	powerLimit atomic.Int32
+
+	hashCount     atomic.Uint64
+	hashrate      atomic.Uint64
+	hashrateReady atomic.Bool
+
+	ewmaMu        sync.Mutex
+	ewmaRate      float64   // EWMA of hashes/sec
+	lastSnapCount uint64    // hashCount at previous snapshot
+	lastSnapTime  time.Time // time of previous snapshot
+	snapCount     int       // number of snapshots taken (for readiness)
+}
+
+// New creates a new Miner. ts may be nil, in which case raw local time is used.
+// allowMining may be nil (always mine); otherwise mining runs only when it returns true.
+// numWorkers sets the thread count; 0 means use all available CPUs.
+func New(c *chain.Chain, e consensus.Engine, mp *mempool.Mempool, p *params.ChainParams, rewardScript []byte, ts TimeSource, allowMining func() bool, onBlock func(*types.Block), numWorkers int) *Miner {
+	if ts == nil {
+		ts = localClock{}
+	}
+	if numWorkers <= 0 {
+		numWorkers = runtime.NumCPU()
+	}
+	if numWorkers < 1 {
+		numWorkers = 1
+	}
+	m := &Miner{
+		chain:         c,
+		engine:        e,
+		mempool:       mp,
+		params:        p,
+		rewardScript:  rewardScript,
+		timeSource:    ts,
+		allowMining:   allowMining,
+		onBlock:       onBlock,
+		workers:       numWorkers,
+	}
+	m.powerLimit.Store(100)
+	return m
+}
+
+// Hashrate returns the approximate hashes per second (EWMA, ~60s time constant).
+func (m *Miner) Hashrate() uint64 {
+	return m.hashrate.Load()
+}
+
+// HashrateReady returns true once enough samples exist for a meaningful average.
+func (m *Miner) HashrateReady() bool {
+	return m.hashrateReady.Load()
+}
+
+// Workers returns the current thread count.
+func (m *Miner) Workers() int {
+	return m.workers
+}
+
+// PowerLimit returns the current power limit percentage (1–100).
+func (m *Miner) PowerLimit() int {
+	return int(m.powerLimit.Load())
+}
+
+// SetPowerLimit adjusts CPU throttling at runtime. pct is clamped to [1, 100].
+func (m *Miner) SetPowerLimit(pct int) {
+	if pct < 1 {
+		pct = 1
+	}
+	if pct > 100 {
+		pct = 100
+	}
+	m.powerLimit.Store(int32(pct))
+}
+
+// skipMiningStartGate returns true when FAIRCHAIN_SKIP_MINING_START is set,
+// ignoring params.MiningStartTime. Intended for local / isolated testing only.
+func skipMiningStartGate() bool {
+	v := strings.TrimSpace(os.Getenv("FAIRCHAIN_SKIP_MINING_START"))
+	return v == "1" || strings.EqualFold(v, "true") || strings.EqualFold(v, "yes")
+}
+
+// MaxWorkers returns the number of logical CPUs available.
+func MaxWorkers() int {
+	n := runtime.NumCPU()
+	if n < 1 {
+		return 1
+	}
+	return n
+}
+
+// Run starts the mining loop. It blocks until ctx is cancelled.
+func (m *Miner) Run(ctx context.Context) {
+	logging.L.Info("starting mining loop", "component", "miner", "workers", m.workers)
+	if skipMiningStartGate() {
+		logging.L.Warn("FAIRCHAIN_SKIP_MINING_START is set: ignoring chain MiningStartTime (local testing only)",
+			"component", "miner")
+	}
+
+	m.ewmaMu.Lock()
+	m.ewmaRate = 0
+	m.lastSnapCount = m.hashCount.Load()
+	m.lastSnapTime = time.Now()
+	m.snapCount = 0
+	m.ewmaMu.Unlock()
+	m.hashrateReady.Store(false)
+	m.hashrate.Store(0)
+
+	go func() {
+		ticker := time.NewTicker(3 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				m.snapshotHashrate()
+			}
+		}
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			logging.L.Info("stopping mining loop", "component", "miner")
+			m.hashrate.Store(0)
+			m.hashrateReady.Store(false)
+			return
+		default:
+		}
+
+		if m.params.MiningStartTime > 0 && !skipMiningStartGate() {
+			now := time.Now().Unix()
+			if now < m.params.MiningStartTime {
+				wait := time.Duration(m.params.MiningStartTime-now) * time.Second
+				logging.L.Info("mining gated until start time",
+					"component", "miner",
+					"starts_in", wait.Round(time.Second))
+				select {
+				case <-ctx.Done():
+					return
+				case <-time.After(30 * time.Second):
+				}
+				continue
+			}
+		}
+
+		if m.allowMining != nil && !m.allowMining() {
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(100 * time.Millisecond):
+			}
+			continue
+		}
+
+		block, err := m.MineOne(ctx)
+		if err != nil {
+			if ctx.Err() != nil {
+				return
+			}
+			logging.L.Error("mining error", "component", "miner", "error", err)
+			time.Sleep(time.Second)
+			continue
+		}
+
+		if block != nil && m.onBlock != nil {
+			m.onBlock(block)
+		}
+
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(10 * time.Millisecond):
+		}
+	}
+}
+
+// ewmaAlpha controls smoothing. With a 3-second sample interval this gives
+// an effective time constant of ~60 seconds: alpha = 1 - exp(-3/60) ≈ 0.049.
+const ewmaAlpha = 0.049
+
+func (m *Miner) snapshotHashrate() {
+	now := time.Now()
+	current := m.hashCount.Load()
+
+	m.ewmaMu.Lock()
+	dt := now.Sub(m.lastSnapTime).Seconds()
+	if dt <= 0 {
+		m.ewmaMu.Unlock()
+		return
+	}
+
+	instantRate := float64(current-m.lastSnapCount) / dt
+	m.lastSnapCount = current
+	m.lastSnapTime = now
+	m.snapCount++
+
+	if m.snapCount == 1 {
+		m.ewmaRate = instantRate
+	} else {
+		m.ewmaRate = ewmaAlpha*instantRate + (1-ewmaAlpha)*m.ewmaRate
+	}
+
+	rate := m.ewmaRate
+	ready := m.snapCount >= 4
+	m.ewmaMu.Unlock()
+
+	m.hashrate.Store(uint64(rate))
+	if ready {
+		m.hashrateReady.Store(true)
+	}
+}
+
+// MineOne builds a template and attempts to mine a single block using all
+// available CPU cores. Each worker searches a distinct nonce range. If the
+// full nonce space is exhausted, the extraNonce/timestamp are bumped and
+// the search restarts (matching Bitcoin Core's inner mining loop).
+func (m *Miner) MineOne(ctx context.Context) (*types.Block, error) {
+	tipHash, tipHeight := m.chain.Tip()
+	tipHeader, err := m.chain.TipHeader()
+	if err != nil {
+		return nil, fmt.Errorf("get tip header: %w", err)
+	}
+
+	newHeight := tipHeight + 1
+	subsidy := m.params.CalcSubsidy(newHeight)
+
+	tmpl := m.mempool.BlockTemplate()
+
+	const headerSize = 80
+	const coinbaseEstimate = 150
+	maxTxCount := int(m.params.MaxBlockTxCount)
+	maxSize := int(m.params.MaxBlockSize)
+	if maxTxCount <= 1 {
+		maxTxCount = 0
+	} else {
+		maxTxCount--
+	}
+
+	var includedTxs []*types.Transaction
+	var totalFees uint64
+	blockSize := headerSize + coinbaseEstimate
+	for i, tx := range tmpl.Transactions {
+		txSize := tmpl.Entries[i].Size
+		if maxTxCount > 0 && len(includedTxs) >= maxTxCount {
+			break
+		}
+		if maxSize > 0 && blockSize+txSize > maxSize {
+			break
+		}
+		includedTxs = append(includedTxs, tx)
+		totalFees += tmpl.Entries[i].Fee
+		blockSize += txSize
+	}
+
+	extraNonce := uint32(0)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, nil
+		default:
+		}
+
+		// Abort if the chain tip changed (new block arrived from network).
+		currentTip, _ := m.chain.Tip()
+		if currentTip != tipHash {
+			return nil, nil
+		}
+
+		coinbaseTx := m.buildCoinbaseWithExtra(newHeight, subsidy+totalFees, extraNonce)
+
+		txs := make([]types.Transaction, 0, 1+len(includedTxs))
+		txs = append(txs, coinbaseTx)
+		for _, tx := range includedTxs {
+			txs = append(txs, *tx)
+		}
+
+		merkle, err := crypto.ComputeMerkleRoot(txs)
+		if err != nil {
+			return nil, fmt.Errorf("compute merkle root: %w", err)
+		}
+
+		ts := uint32(m.timeSource.Now())
+		if ts <= tipHeader.Timestamp {
+			ts = tipHeader.Timestamp + 1
+		}
+
+		header := types.BlockHeader{
+			Version:    1,
+			PrevBlock:  tipHash,
+			MerkleRoot: merkle,
+			Timestamp:  ts,
+			Nonce:      0,
+		}
+
+		if err := m.engine.PrepareHeader(&header, tipHeader, tipHeight, m.chain.GetAncestor, m.params); err != nil {
+			return nil, fmt.Errorf("prepare header: %w", err)
+		}
+
+		target := crypto.CompactToHash(header.Bits)
+
+		block, found := m.searchNonceSpace(ctx, header, target, txs, tipHash, newHeight)
+		if found {
+			return block, nil
+		}
+
+		// Nonce space exhausted — bump extraNonce and retry with new merkle root.
+		extraNonce++
+	}
+}
+
+// searchNonceSpace splits the 32-bit nonce space across all workers and
+// returns the solved block if any worker finds a valid nonce.
+func (m *Miner) searchNonceSpace(ctx context.Context, header types.BlockHeader, target types.Hash, txs []types.Transaction, tipHash types.Hash, height uint32) (*types.Block, bool) {
+	numWorkers := m.workers
+	rangeSize := uint64(0x100000000) / uint64(numWorkers)
+	// PoW hashes per SealHeader call before re-checking the chain tip.
+	// For fast algorithms (sha256d), small batches keep stale work low.
+	// For sha256mem (~10–200 H/s per machine), a slightly larger batch
+	// reduces per-batch overhead while still checking the tip many times per second.
+	batchSize := uint64(4)
+	if coinparams.Algorithm == "sha256mem" {
+		batchSize = 32
+	}
+
+	type result struct {
+		header types.BlockHeader
+	}
+
+	workerCtx, workerCancel := context.WithCancel(ctx)
+	defer workerCancel()
+
+	resultCh := make(chan result, 1)
+	var wg sync.WaitGroup
+
+	cs, hasCountedSealer := m.engine.(countedSealer)
+
+	for w := 0; w < numWorkers; w++ {
+		wg.Add(1)
+		startNonce := uint64(w) * rangeSize
+		endNonce := startNonce + rangeSize
+		if w == numWorkers-1 {
+			endNonce = 0x100000000
+		}
+
+		go func(wHeader types.BlockHeader, start, end uint64) {
+			defer wg.Done()
+			wHeader.Nonce = uint32(start)
+			pos := start
+
+			for pos < end {
+				select {
+				case <-workerCtx.Done():
+					return
+				default:
+				}
+
+				remaining := end - pos
+				batch := batchSize
+				if remaining < batch {
+					batch = remaining
+				}
+
+				batchStart := time.Now()
+
+				if hasCountedSealer {
+					found, hashes, sealErr := cs.SealHeaderCounted(&wHeader, target, height, m.params, batch)
+					m.hashCount.Add(hashes)
+					if sealErr != nil {
+						return
+					}
+					if found {
+						select {
+						case resultCh <- result{header: wHeader}:
+						default:
+						}
+						workerCancel()
+						return
+					}
+				} else {
+					found, sealErr := m.engine.SealHeader(&wHeader, target, height, m.params, batch)
+					m.hashCount.Add(batch)
+					if sealErr != nil {
+						return
+					}
+					if found {
+						select {
+						case resultCh <- result{header: wHeader}:
+						default:
+						}
+						workerCancel()
+						return
+					}
+				}
+
+				pos += batch
+				wHeader.Nonce = uint32(pos & 0xFFFFFFFF)
+
+				// Check if chain tip changed (stale work).
+				currentTip, _ := m.chain.Tip()
+				if currentTip != tipHash {
+					return
+				}
+
+				// Power limit throttling: sleep proportionally to work time.
+				if pct := int(m.powerLimit.Load()); pct < 100 {
+					elapsed := time.Since(batchStart)
+					sleepRatio := float64(100-pct) / float64(pct)
+					time.Sleep(time.Duration(float64(elapsed) * sleepRatio))
+				}
+			}
+		}(header, startNonce, endNonce)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultCh)
+	}()
+
+	res, ok := <-resultCh
+	workerCancel()
+	wg.Wait()
+
+	if !ok {
+		return nil, false
+	}
+
+	block := &types.Block{
+		Header:       res.header,
+		Transactions: txs,
+	}
+	blockHash := crypto.HashBlockHeader(&block.Header)
+	currentTip, currentHeight := m.chain.Tip()
+	if currentTip != tipHash {
+		logging.L.Debug("discarding stale block (tip moved during mining)",
+			"component", "miner", "hash", blockHash.ReverseString(),
+			"built_on_height", currentHeight)
+		return nil, false
+	}
+	logging.L.Info("found block", "component", "miner", "hash", blockHash.ReverseString(), "height", currentHeight+1, "nonce", res.header.Nonce)
+	return block, true
+}
+
+func (m *Miner) buildCoinbase(height uint32, subsidy uint64) types.Transaction {
+	return m.buildCoinbaseWithExtra(height, subsidy, 0)
+}
+
+func (m *Miner) buildCoinbaseWithExtra(height uint32, subsidy uint64, extraNonce uint32) types.Transaction {
+	// BIP34: encode height as a CScript push — [pushLen][height LE bytes][extraNonce LE][tag].
+	pushLen := minimalHeightPushLen(height)
+	heightBytes := make([]byte, 4)
+	types.PutUint32LE(heightBytes, height)
+	msg := make([]byte, 0, 1+pushLen+4+len(coinparams.CoinbaseTag))
+	msg = append(msg, byte(pushLen))
+	msg = append(msg, heightBytes[:pushLen]...)
+	if extraNonce > 0 {
+		extraBytes := make([]byte, 4)
+		types.PutUint32LE(extraBytes, extraNonce)
+		msg = append(msg, extraBytes...)
+	}
+	msg = append(msg, []byte(coinparams.CoinbaseTag)...)
+
+	outputs := []types.TxOutput{
+		{
+			Value:    subsidy,
+			PkScript: m.rewardScript,
+		},
+	}
+
+	// Premine: at the designated height, append the required premine output.
+	if m.params.PremineHeight > 0 && height == m.params.PremineHeight && m.params.PremineAmount > 0 {
+		outputs = append(outputs, types.TxOutput{
+			Value:    m.params.PremineAmount,
+			PkScript: m.params.PremineScript,
+		})
+	}
+
+	return types.Transaction{
+		Version: 1,
+		Inputs: []types.TxInput{
+			{
+				PreviousOutPoint: types.CoinbaseOutPoint,
+				SignatureScript:  msg,
+				Sequence:         0xFFFFFFFF,
+			},
+		},
+		Outputs: outputs,
+		LockTime: 0,
+	}
+}
+
+func minimalHeightPushLen(height uint32) int {
+	switch {
+	case height <= 0xFF:
+		return 1
+	case height <= 0xFFFF:
+		return 2
+	case height <= 0xFFFFFF:
+		return 3
+	default:
+		return 4
+	}
+}

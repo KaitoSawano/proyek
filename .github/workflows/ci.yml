@@ -1,0 +1,65 @@
+# Copyright (c) 2024-2026 The Fairchain Contributors
+# Fairchain is an experiment in modularity, designed to improve on the work
+# of Satoshi Nakamoto and to inspire more creative genius in the space.
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build and Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Show Go version
+        run: go version
+
+      - name: Clone vendored Wails (go.mod replace directive)
+        run: git clone --depth 1 --branch v2.11.0 https://github.com/wailsapp/wails.git depends/wails
+
+      - name: Create QT frontend stub (embed directive needs dist/)
+        run: mkdir -p cmd/qt/frontend/dist && touch cmd/qt/frontend/dist/.gitkeep
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Verify chaos launcher entrypoint
+        run: python scripts/chaos_test.py --check-parity
+
+      - name: Lint (go vet)
+        run: go vet $(go list ./... | grep -v /cmd/qt)
+
+      - name: Build all packages
+        run: go build $(go list ./... | grep -v /cmd/qt)
+
+      - name: Test all packages
+        run: go test $(go list ./... | grep -v /cmd/qt)

@@ -1,0 +1,286 @@
+# Copyright (c) 2024-2026 The Fairchain Contributors
+# Fairchain is an experiment in modularity, designed to improve on the work
+# of Satoshi Nakamoto and to inspire more creative genius in the space.
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+# All binary and archive names derived from internal/coinparams/coinparams.go
+# via scripts/coinparams.sh. To rebrand: edit coinparams.go only.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v0.3.0)"
+        required: true
+      title:
+        description: "Release title"
+        required: true
+        default: "Release"
+      prerelease:
+        description: "Mark as pre-release"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  # ── Extract coin parameters (shared by all build jobs) ───────────────────
+  params:
+    runs-on: ubuntu-latest
+    outputs:
+      coin_name: ${{ steps.extract.outputs.coin_name }}
+      coin_name_lower: ${{ steps.extract.outputs.coin_name_lower }}
+      daemon_name: ${{ steps.extract.outputs.daemon_name }}
+      cli_name: ${{ steps.extract.outputs.cli_name }}
+      gui_name: ${{ steps.extract.outputs.gui_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: extract
+        run: |
+          eval $(bash scripts/coinparams.sh --env)
+          echo "coin_name=$COIN_NAME" >> "$GITHUB_OUTPUT"
+          echo "coin_name_lower=$COIN_NAME_LOWER" >> "$GITHUB_OUTPUT"
+          echo "daemon_name=$DAEMON_NAME" >> "$GITHUB_OUTPUT"
+          echo "cli_name=$CLI_NAME" >> "$GITHUB_OUTPUT"
+          echo "gui_name=$GUI_NAME" >> "$GITHUB_OUTPUT"
+
+  # ── Build daemon + CLI + QT wallet for each platform ───────────────────
+  build:
+    needs: params
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            goos: linux
+            goarch: amd64
+            label: linux-amd64
+            build_gui: true
+          - runner: ubuntu-latest
+            goos: linux
+            goarch: arm64
+            label: linux-arm64
+            build_gui: false
+          - runner: macos-latest
+            goos: darwin
+            goarch: amd64
+            label: macos-amd64
+            build_gui: true
+          - runner: macos-latest
+            goos: darwin
+            goarch: arm64
+            label: macos-arm64
+            build_gui: true
+          - runner: windows-latest
+            goos: windows
+            goarch: amd64
+            label: windows-amd64
+            build_gui: true
+
+    runs-on: ${{ matrix.runner }}
+    env:
+      DAEMON_NAME: ${{ needs.params.outputs.daemon_name }}
+      CLI_NAME: ${{ needs.params.outputs.cli_name }}
+      GUI_NAME: ${{ needs.params.outputs.gui_name }}
+      COIN_NAME_LOWER: ${{ needs.params.outputs.coin_name_lower }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Set up Node.js
+        if: matrix.build_gui
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Clone vendored Wails (go.mod replace directive)
+        run: git clone --depth 1 --branch v2.11.0 https://github.com/wailsapp/wails.git depends/wails
+
+      - name: Install Linux GUI dependencies
+        if: matrix.build_gui && runner.os == 'Linux'
+        run: |
+          sudo apt-get -yq update
+          sudo apt-get -yq install libgtk-3-dev libwebkit2gtk-4.1-dev
+
+      - name: Install Wails CLI
+        if: matrix.build_gui
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.11.0
+
+      - name: Build daemon and CLI
+        shell: bash
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
+        run: |
+          mkdir -p staging
+
+          EXT=""
+          if [ "$GOOS" = "windows" ]; then EXT=".exe"; fi
+
+          go build -trimpath -ldflags="-s -w" -o "staging/${DAEMON_NAME}${EXT}" ./cmd/node
+          go build -trimpath -ldflags="-s -w" -o "staging/${CLI_NAME}${EXT}" ./cmd/cli
+
+      - name: Build QT wallet (Linux)
+        if: matrix.build_gui && runner.os == 'Linux'
+        shell: bash
+        run: |
+          cd cmd/qt
+          wails build -tags webkit2_41
+          cp build/bin/${GUI_NAME} ../../staging/${GUI_NAME}
+
+      - name: Build QT wallet (macOS)
+        if: matrix.build_gui && runner.os == 'macOS'
+        shell: bash
+        run: |
+          cd cmd/qt
+          wails build -platform darwin/${{ matrix.goarch }}
+          cp -r build/bin/${GUI_NAME}.app ../../staging/${GUI_NAME}.app
+
+      - name: Build QT wallet (Windows)
+        if: matrix.build_gui && runner.os == 'Windows'
+        shell: bash
+        run: |
+          cd cmd/qt
+          wails build -webview2 embed
+          cp build/bin/${GUI_NAME}.exe ../../staging/${GUI_NAME}.exe
+
+      - name: Package (tar.gz for Unix)
+        if: matrix.goos != 'windows'
+        shell: bash
+        run: |
+          ARCHIVE="${COIN_NAME_LOWER}-${{ matrix.label }}.tar.gz"
+          tar -C staging -czf "$ARCHIVE" .
+          echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Package (zip for Windows)
+        if: matrix.goos == 'windows'
+        shell: pwsh
+        run: |
+          $archive = "${env:COIN_NAME_LOWER}-${{ matrix.label }}.zip"
+          Compress-Archive -Path staging\* -DestinationPath $archive
+          "ARCHIVE=$archive" | Out-File -Append -FilePath $env:GITHUB_ENV
+
+      - name: Generate SHA256 (Unix)
+        if: matrix.goos != 'windows'
+        shell: bash
+        run: |
+          if command -v sha256sum &>/dev/null; then
+            sha256sum "$ARCHIVE" > "${ARCHIVE}.sha256"
+          else
+            shasum -a 256 "$ARCHIVE" > "${ARCHIVE}.sha256"
+          fi
+
+      - name: Generate SHA256 (Windows)
+        if: matrix.goos == 'windows'
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash $env:ARCHIVE -Algorithm SHA256).Hash.ToLower()
+          "$hash  $($env:ARCHIVE)" | Out-File -Encoding ascii "${env:ARCHIVE}.sha256"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }}
+          path: |
+            ${{ env.ARCHIVE }}
+            ${{ env.ARCHIVE }}.sha256
+
+  # ── Create GitHub release with all artifacts ─────────────────────────────
+  release:
+    needs: [params, build]
+    runs-on: ubuntu-latest
+    env:
+      COIN_NAME: ${{ needs.params.outputs.coin_name }}
+      COIN_NAME_LOWER: ${{ needs.params.outputs.coin_name_lower }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -lhR dist/
+
+      - name: Generate combined checksums
+        run: |
+          cd dist
+          cat *.sha256 > "${COIN_NAME_LOWER}-SHA256SUMS.txt"
+          echo "Generated checksums:"
+          cat "${COIN_NAME_LOWER}-SHA256SUMS.txt"
+
+      - name: Create release notes
+        run: |
+          cat > dist/RELEASE_NOTES.md <<EOF
+          ## ${COIN_NAME} — ${{ inputs.title }}
+
+          Each archive contains the full node daemon, CLI client, and GUI wallet.
+
+          ### Downloads
+
+          | Platform | Architecture | Archive | GUI Wallet |
+          |----------|-------------|---------|------------|
+          | Linux | x86_64 | \`${COIN_NAME_LOWER}-linux-amd64.tar.gz\` | Included |
+          | Linux | ARM64 | \`${COIN_NAME_LOWER}-linux-arm64.tar.gz\` | CLI only |
+          | macOS | x86_64 (Intel) | \`${COIN_NAME_LOWER}-macos-amd64.tar.gz\` | Included |
+          | macOS | ARM64 (Apple Silicon) | \`${COIN_NAME_LOWER}-macos-arm64.tar.gz\` | Included |
+          | Windows | x86_64 | \`${COIN_NAME_LOWER}-windows-amd64.zip\` | Included |
+
+          ### Verify downloads
+
+          \`\`\`bash
+          sha256sum -c ${COIN_NAME_LOWER}-SHA256SUMS.txt
+          \`\`\`
+
+          ### Quick start
+
+          \`\`\`bash
+          # Extract
+          tar xzf ${COIN_NAME_LOWER}-linux-amd64.tar.gz
+
+          # Run the GUI wallet (auto-detects mainnet/testnet)
+          ./${COIN_NAME_LOWER}-qt
+
+          # Or run the daemon (specify network explicitly)
+          ./${COIN_NAME_LOWER}d -network mainnet -mine
+
+          # Check status (in another terminal)
+          ./${COIN_NAME_LOWER}-cli getblockchaininfo
+          \`\`\`
+          EOF
+
+          # Strip leading whitespace from heredoc indentation.
+          sed -i 's/^          //' dist/RELEASE_NOTES.md
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PRERELEASE_FLAG=""
+          if [ "${{ inputs.prerelease }}" = "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          gh release create "${{ inputs.tag }}" \
+            --title "${{ inputs.title }}" \
+            --notes-file dist/RELEASE_NOTES.md \
+            $PRERELEASE_FLAG \
+            dist/${COIN_NAME_LOWER}-linux-amd64.tar.gz \
+            dist/${COIN_NAME_LOWER}-linux-arm64.tar.gz \
+            dist/${COIN_NAME_LOWER}-macos-amd64.tar.gz \
+            dist/${COIN_NAME_LOWER}-macos-arm64.tar.gz \
+            dist/${COIN_NAME_LOWER}-windows-amd64.zip \
+            dist/${COIN_NAME_LOWER}-SHA256SUMS.txt

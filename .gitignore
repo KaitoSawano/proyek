@@ -1,0 +1,68 @@
+# resources/sha256mem-c/ local build outputs (see Makefile)
+resources/sha256mem-c/build/*
+!resources/sha256mem-c/build/.gitkeep
+
+# Binaries
+bin/
+/node
+/adversary
+/adversary2
+/adversary3
+/genesis
+/qt
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Node.js (GUI wallet frontend)
+node_modules/
+cmd/qt/frontend/dist/*
+!cmd/qt/frontend/dist/.gitkeep
+cmd/qt/build/bin/
+cmd/qt/frontend/package.json.md5
+
+# Go build cache
+*.test
+*.out
+
+# Generated Makefile includes (from ./configure and scripts/coinparams.sh)
+config.mk
+coinparams.mk
+
+# IDE / Editor
+.idea/
+.cursor/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node data (local chains, databases)
+*.db
+data/
+
+# Temporary test data
+/tmp/
+
+# Chaos test run data (sequential runs)
+chaos-runs/
+
+# Modularity test run data
+modularity-runs/
+
+# Vendored dependencies (fetched on demand, like Bitcoin Core depends/)
+depends/
+
+# Environment / secrets
+.env
+*.pem
+*.key
+credentials.json
