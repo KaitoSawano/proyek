@@ -1,5 +1,5 @@
 // Copyright (c) 2026 AldianOkto. All rights reserved.
-// Copyright (c) 2026 Eterbit Core.
+// Copyright (c) 2026 Xcosh Core.
 // Use of this source code is governed by the Apache License.
 // that can be found in the root directory of this repository.
 // Project: Eterbit / Blockchain Core
@@ -12,7 +12,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 //go:build windows
 // +build windows
 
